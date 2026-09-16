@@ -1,9 +1,9 @@
 @import "tailwindcss";
 
 /* ═══════════════════════════════════════════
-   GEMELAR — Design System
-   Paleta: Azul suave, Roxo lavanda, Verde-água
-   Tudo arredondado, acolhedor, sem cantos retos
+   GEMELAR v2 — Design System
+   Paleta: Roxo lavanda, Azul suave, Verde-água
+   Tudo arredondado, acolhedor, acessível
    ═══════════════════════════════════════════ */
 
 @theme {
@@ -14,7 +14,7 @@
   --color-texto-claro: #8B7BA0;
   --color-rosa-suave: #E8B4D0;
 
-  /* ── Roxo Lavanda (cor favorita) ── */
+  /* ── Roxo Lavanda (cor principal) ── */
   --color-roxo-claro: #E8E0F6;
   --color-roxo-medio: #C5B3E6;
   --color-roxo: #A78BDB;
@@ -32,87 +32,21 @@
   --color-agua: #74C9BE;
   --color-agua-intenso: #55B5A8;
 
-  /* ── Pares — Sol ── */
-  --color-sol-claro: #FFF0C8;
-  --color-sol-medio: #FFE08A;
-  --color-sol: #FFD166;
+  /* ── Cores de Nível / Progresso ── */
+  --color-nivel-inicio: #C5B3E6;
+  --color-nivel-meio: #A8CCF0;
+  --color-nivel-fim: #A0DDD6;
+  --color-xp-bar: #EDE8F5;
+  --color-xp-fill: linear-gradient(90deg, #C5B3E6, #7BB3E0, #74C9BE);
 
-  /* ── Pares — Lua ── */
-  --color-lua-claro: #E0D4F5;
-  --color-lua-medio: #C5AEEA;
-  --color-lua: #A78BDB;
+  /* ── Cores de Trimestre ── */
+  --color-tri1: #E8E0F6;
+  --color-tri2: #D6E8FA;
+  --color-tri3: #D0F0ED;
 
-  /* ── Pares — Fogo ── */
-  --color-fogo-claro: #FFD9BE;
-  --color-fogo-medio: #FFB88A;
-  --color-fogo: #FFA066;
-
-  /* ── Pares — Terra ── */
-  --color-terra-claro: #D2E8C8;
-  --color-terra-medio: #AED49A;
-  --color-terra: #8FBF7F;
-
-  /* ── Pares — Ar ── */
-  --color-ar-claro: #D4F1F9;
-  --color-ar-medio: #A8E0EE;
-  --color-ar: #7CCFE0;
-
-  /* ── Novos Pares ── */
-  /* Dia/Noite (Amarelo / Azul escuro) */
-  --color-dia-claro: #FFF5D1;
-  --color-dia-medio: #FFE89C;
-  --color-dia: #FFD659;
-  --color-noite-claro: #D2D5EB;
-  --color-noite-medio: #A5ABC9;
-  --color-noite: #737CA3;
-
-  /* Flor/Folha (Rosa / Verde suave) */
-  --color-flor-claro: #FCE1EE;
-  --color-flor-medio: #F8BBD8;
-  --color-flor: #F28EBE;
-  --color-folha-claro: #E1F2DF;
-  --color-folha-medio: #BCE3B6;
-  --color-folha: #8BCC81;
-
-  /* Rio/Montanha (Azul claro / Cinza) */
-  --color-rio-claro: #DAF0F7;
-  --color-rio-medio: #A9DCED;
-  --color-rio: #68C2DF;
-  --color-montanha-claro: #E5E6E8;
-  --color-montanha-medio: #C5C9CD;
-  --color-montanha: #A4A9AE;
-
-  /* Estrela/Cometa (Dourado / Azul) */
-  --color-estrela-claro: #FFF4D9;
-  --color-estrela-medio: #FFE399;
-  --color-estrela: #FFCC4D;
-  --color-cometa-claro: #E6F3FF;
-  --color-cometa-medio: #B3DDFF;
-  --color-cometa: #73C2FF;
-
-  /* Nuvem/Arco-íris (Branco creme / Lavanda colorida) */
-  --color-nuvem-claro: #F8FAFC;
-  --color-nuvem-medio: #E2E8F0;
-  --color-nuvem: #CBD5E1;
-  --color-arco-claro: #F3E8FF;
-  --color-arco-medio: #D8B4FE;
-  --color-arco: #C084FC;
-
-  /* Gatinho/Cachorrinho (Laranja / Marrom claro) */
-  --color-gatinho-claro: #FFEDD5;
-  --color-gatinho-medio: #FDBA74;
-  --color-gatinho: #FB923C;
-  --color-cachorro-claro: #FEF3C7;
-  --color-cachorro-medio: #FCD34D;
-  --color-cachorro: #F59E0B;
-
-  /* Ursinho/Coelhinho (Marrom / Cinza claro) */
-  --color-ursinho-claro: #F3E8E0;
-  --color-ursinho-medio: #DDC4B1;
-  --color-ursinho: #C29F81;
-  --color-coelhinho-claro: #F1F5F9;
-  --color-coelhinho-medio: #CBD5E1;
-  --color-coelhinho: #94A3B8;
+  /* ── Cores de Autor (Diário) ── */
+  --color-mae: #A78BDB;
+  --color-parceiro: #7BB3E0;
 
   /* ── Tipografia ── */
   --font-titulo: 'Quicksand', 'Nunito', sans-serif;
@@ -188,7 +122,7 @@ button:focus-visible {
   border-radius: var(--radius-full);
 }
 
-/* ═══ Animação de brilho ═══ */
+/* ═══ Animações ═══ */
 @keyframes brilho-suave {
   0%, 100% { opacity: 0.6; }
   50% { opacity: 1; }
@@ -204,10 +138,24 @@ button:focus-visible {
   50% { transform: translateY(-8px); }
 }
 
-@keyframes estrela-surgir {
-  0% { opacity: 0; transform: scale(0) rotate(0deg); }
-  50% { opacity: 1; transform: scale(1.3) rotate(180deg); }
-  100% { opacity: 0; transform: scale(0) rotate(360deg) translateY(-30px); }
+@keyframes respirar {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+}
+
+@keyframes girar-lento {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes xp-fill {
+  from { width: 0%; }
+}
+
+@keyframes confetti-pop {
+  0% { transform: scale(0) rotate(0deg); opacity: 1; }
+  50% { transform: scale(1.4) rotate(180deg); opacity: 1; }
+  100% { transform: scale(0) rotate(360deg) translateY(-40px); opacity: 0; }
 }
 
 /* ═══ Utilitários ═══ */

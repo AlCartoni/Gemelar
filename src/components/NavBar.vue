@@ -11,25 +11,23 @@
     >
       <span class="nav-icon" v-html="item.icon"></span>
       <span class="nav-label">{{ item.label }}</span>
-      <!-- Indicador de ativo -->
       <span v-if="currentScreen === item.screen" class="nav-indicador"></span>
     </button>
   </nav>
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import { useGemelar } from '../composables/useGemelar.js'
 
 const { state, navigateTo } = useGemelar()
 const currentScreen = computed(() => state.currentScreen)
 
-import { computed } from 'vue'
-
 const items = [
   {
     screen: 'semanas',
-    label: 'Crescer',
-    icon: `<svg viewBox="0 0 24 24" width="26" height="26" fill="none"><path d="M12 22V8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M12 8c-2-3-6-3-7-1s1 5 7 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 12c2-3 6-4 7-2s-1 5-7 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="22" r="0" stroke="currentColor" stroke-width="0"/><path d="M8 22h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`,
+    label: 'Semanas',
+    icon: `<svg viewBox="0 0 24 24" width="26" height="26" fill="none"><path d="M12 22V8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M12 8c-2-3-6-3-7-1s1 5 7 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 12c2-3 6-4 7-2s-1 5-7 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 22h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`,
   },
   {
     screen: 'diario',
@@ -38,8 +36,8 @@ const items = [
   },
   {
     screen: 'duvidas',
-    label: 'Dúvidas',
-    icon: `<svg viewBox="0 0 24 24" width="26" height="26" fill="none"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="10" r="0.5" fill="currentColor" stroke="currentColor" stroke-width="1"/><path d="M9.5 8.5a2.5 2.5 0 015 0c0 1.5-2.5 2-2.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>`,
+    label: 'Cuidados',
+    icon: `<svg viewBox="0 0 24 24" width="26" height="26" fill="none"><path d="M12 22c5.5 0 10-4.5 10-10S17.5 2 12 2 2 6.5 2 12s4.5 10 10 10z" stroke="currentColor" stroke-width="2"/><path d="M12 8v4M12 16h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`,
   },
 ]
 </script>
@@ -50,6 +48,8 @@ const items = [
   bottom: 0;
   left: 0;
   right: 0;
+  max-width: 480px;
+  margin: 0 auto;
   display: flex;
   justify-content: space-around;
   align-items: center;
@@ -65,13 +65,13 @@ const items = [
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  padding: 8px 16px;
+  padding: 10px 20px;
   border-radius: var(--radius-lg);
   background: transparent;
   color: var(--color-texto-claro);
   transition: all 0.3s ease;
   position: relative;
-  min-width: 60px;
+  min-width: 65px;
 }
 
 .nav-item:active {
@@ -96,14 +96,14 @@ const items = [
 
 .nav-label {
   font-family: var(--font-titulo);
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.02em;
 }
 
 .nav-indicador {
   position: absolute;
-  bottom: 2px;
+  bottom: 4px;
   width: 20px;
   height: 3px;
   border-radius: var(--radius-full);

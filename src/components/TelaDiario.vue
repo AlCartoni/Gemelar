@@ -2,7 +2,7 @@
   <div class="tela-diario">
     <!-- Cabeçalho -->
     <div class="tela-header">
-      <h1 class="tela-titulo">Diário do coração 📖</h1>
+      <h1 class="tela-titulo">Diário 📖</h1>
       <BotaoOuvir :texto-para-ler="textoParaLer" />
     </div>
 
@@ -27,35 +27,37 @@
       ></textarea>
       <div class="escrita-acoes">
         <div class="autor-selector">
-          <button 
-            class="autor-btn" 
-            :class="{ ativo: autorAtual === 'mae' }" 
+          <button
+            class="autor-btn"
+            :class="{ ativo: autorAtual === 'mae' }"
             @click="autorAtual = 'mae'"
-            :style="{ background: autorAtual === 'mae' ? parCores.primary : 'transparent', color: autorAtual === 'mae' ? 'white' : 'var(--color-texto)' }"
           >
-            {{ parCores.emoji1 }} Mamãe
+            🌸 Mamãe
           </button>
-          <button 
-            class="autor-btn" 
-            :class="{ ativo: autorAtual === 'parceiro' }" 
+          <button
+            class="autor-btn"
+            :class="{ ativo: autorAtual === 'parceiro' }"
             @click="autorAtual = 'parceiro'"
-            :style="{ background: autorAtual === 'parceiro' ? parCores.secondary : 'transparent', color: autorAtual === 'parceiro' ? 'white' : 'var(--color-texto)' }"
           >
-            {{ parCores.emoji2 }} Parceiro(a)
+            💙 Parceiro(a)
           </button>
         </div>
         <motion.button
           class="salvar-btn"
-          :whilePress="{ scale: 0.95 }"
+          :whileTap="{ scale: 0.95 }"
           @click="salvar"
           :disabled="!textoAtual.trim()"
-          :style="{ background: autorAtual === 'mae' ? parCores.primary : parCores.secondary }"
         >
           <span>Guardar</span>
           <span class="salvar-emoji">💜</span>
         </motion.button>
       </div>
     </div>
+
+    <!-- XP hint -->
+    <p class="xp-dica" v-if="state.diaryEntries.length === 0">
+      ✨ Escreva algo e ganhe <strong>15 XP</strong>!
+    </p>
 
     <!-- Entradas anteriores -->
     <div v-if="state.diaryEntries.length > 0" class="entradas">
@@ -64,30 +66,35 @@
         v-for="(entrada, index) in entradasVisiveis"
         :key="entrada.id"
         class="entrada-card"
-        :style="{ 
-          background: entrada.autor === 'parceiro' ? parCores.bgTo : parCores.bgFrom,
-          borderColor: entrada.autor === 'parceiro' ? parCores.secondary : parCores.primary
-        }"
+        :class="'entrada-' + entrada.autor"
         :initial="{ opacity: 0, x: -20 }"
         :animate="{ opacity: 1, x: 0 }"
         :transition="{ delay: index * 0.1 }"
       >
         <div class="entrada-meta">
-          <span class="entrada-icone">{{ entrada.autor === 'parceiro' ? parCores.emoji2 : parCores.emoji1 }}</span>
+          <span class="entrada-icone">{{ entrada.autor === 'parceiro' ? '💙' : '🌸' }}</span>
           <span class="entrada-data">{{ entrada.data }}</span>
           <span class="entrada-hora">{{ entrada.hora }}</span>
         </div>
         <p class="entrada-texto">{{ entrada.texto }}</p>
       </motion.div>
+
+      <button
+        v-if="state.diaryEntries.length > 5 && !mostrarTodas"
+        class="btn-ver-mais glass"
+        @click="mostrarTodas = true"
+      >
+        Ver mais momentos ✨
+      </button>
     </div>
 
     <!-- Feedback de salvo -->
     <Teleport to="body">
-      <transition name="fade">
+      <Transition name="fade">
         <div v-if="mostrarFeedback" class="feedback-salvo">
-          <span>Guardado com carinho 💜</span>
+          <span>Guardado com carinho 💜 +15 XP</span>
         </div>
-      </transition>
+      </Transition>
     </Teleport>
   </div>
 </template>
@@ -98,13 +105,12 @@ import { motion } from 'motion-v'
 import { useGemelar } from '../composables/useGemelar.js'
 import BotaoOuvir from './BotaoOuvir.vue'
 
-const { state, addDiaryEntry, getPairColors } = useGemelar()
+const { state, addDiaryEntry } = useGemelar()
 
 const textoAtual = ref('')
 const mostrarFeedback = ref(false)
 const autorAtual = ref('mae')
-
-const parCores = computed(() => getPairColors())
+const mostrarTodas = ref(false)
 
 const frases = [
   { texto: 'O que você está sentindo hoje?', emoji: '🌸' },
@@ -132,6 +138,7 @@ const placeholderAtual = computed(() => {
 })
 
 const entradasVisiveis = computed(() => {
+  if (mostrarTodas.value) return state.diaryEntries
   return state.diaryEntries.slice(0, 5)
 })
 
@@ -149,13 +156,13 @@ function salvar() {
 
   setTimeout(() => {
     mostrarFeedback.value = false
-  }, 2000)
+  }, 2500)
 }
 </script>
 
 <style scoped>
 .tela-diario {
-  padding: 20px 16px 100px 16px;
+  padding: 20px 16px 110px 16px;
   min-height: 100dvh;
 }
 
@@ -163,7 +170,7 @@ function salvar() {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
   padding-top: 8px;
 }
 
@@ -180,15 +187,10 @@ function salvar() {
   gap: 12px;
   padding: 16px 20px;
   border-radius: var(--radius-lg);
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
-
-.incentivo-emoji {
-  font-size: 1.6rem;
-}
-
+.incentivo-emoji { font-size: 1.6rem; }
 .incentivo-texto {
-  font-family: var(--font-corpo);
   font-size: 1rem;
   color: var(--color-texto);
   margin: 0;
@@ -199,9 +201,8 @@ function salvar() {
 .escrita-wrapper {
   border-radius: var(--radius-lg);
   padding: 16px;
-  margin-bottom: 28px;
+  margin-bottom: 12px;
 }
-
 .escrita-area {
   width: 100%;
   border: none;
@@ -214,7 +215,6 @@ function salvar() {
   line-height: 1.6;
   box-sizing: border-box;
 }
-
 .escrita-area::placeholder {
   color: var(--color-texto-claro);
   opacity: 0.5;
@@ -231,20 +231,30 @@ function salvar() {
 
 .autor-selector {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   background: rgba(255, 255, 255, 0.4);
   padding: 4px;
   border-radius: var(--radius-full);
 }
-
 .autor-btn {
   border: none;
   border-radius: var(--radius-full);
-  padding: 6px 12px;
+  padding: 8px 14px;
   font-family: var(--font-titulo);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 600;
+  color: var(--color-texto-claro);
+  background: transparent;
   transition: all 0.3s;
+}
+.autor-btn.ativo {
+  color: white;
+}
+.autor-btn.ativo:first-child {
+  background: var(--color-mae);
+}
+.autor-btn.ativo:last-child {
+  background: var(--color-parceiro);
 }
 
 .salvar-btn {
@@ -254,26 +264,27 @@ function salvar() {
   padding: 12px 28px;
   border-radius: var(--radius-full);
   color: white;
+  background: var(--color-roxo);
   font-family: var(--font-titulo);
   font-size: 1rem;
   font-weight: 600;
   box-shadow: var(--shadow-suave);
   transition: opacity 0.2s ease;
 }
+.salvar-btn:disabled { opacity: 0.35; }
+.salvar-emoji { font-size: 1.1rem; }
 
-.salvar-btn:disabled {
-  opacity: 0.35;
+/* ── XP dica ── */
+.xp-dica {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--color-roxo);
+  font-weight: 600;
+  margin: 0 0 20px 0;
 }
 
-.salvar-emoji {
-  font-size: 1.1rem;
-}
-
-/* ── Entradas anteriores ── */
-.entradas {
-  margin-top: 8px;
-}
-
+/* ── Entradas ── */
+.entradas { margin-top: 8px; }
 .entradas-titulo {
   font-family: var(--font-titulo);
   font-size: 1rem;
@@ -285,33 +296,47 @@ function salvar() {
 .entrada-card {
   padding: 16px;
   border-radius: var(--radius-md);
-  margin-bottom: 12px;
+  margin-bottom: 10px;
   border-left: 4px solid transparent;
+}
+.entrada-mae {
+  background: var(--color-roxo-claro);
+  border-color: var(--color-mae);
+}
+.entrada-parceiro {
+  background: var(--color-azul-claro);
+  border-color: var(--color-parceiro);
 }
 
 .entrada-meta {
   display: flex;
   gap: 10px;
   margin-bottom: 8px;
+  align-items: center;
 }
-
-.entrada-data,
-.entrada-hora {
+.entrada-data, .entrada-hora {
   font-family: var(--font-titulo);
   font-size: 0.8rem;
   color: var(--color-texto-claro);
   font-weight: 500;
 }
-
-.entrada-icone {
-  font-size: 1rem;
-}
-
+.entrada-icone { font-size: 1rem; }
 .entrada-texto {
   font-size: 0.95rem;
   color: var(--color-texto);
   margin: 0;
   line-height: 1.5;
+}
+
+.btn-ver-mais {
+  width: 100%;
+  padding: 14px;
+  border-radius: var(--radius-lg);
+  font-family: var(--font-titulo);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-roxo);
+  margin-top: 8px;
 }
 
 /* ── Feedback ── */
@@ -329,20 +354,10 @@ function salvar() {
   font-size: 0.95rem;
   box-shadow: var(--shadow-media);
   z-index: 200;
+  white-space: nowrap;
 }
 
-.fade-enter-active,
-.fade-leave-active {
-  transition: all 0.4s ease;
-}
-
-.fade-enter-from {
-  opacity: 0;
-  transform: translateX(-50%) translateY(-16px);
-}
-
-.fade-leave-to {
-  opacity: 0;
-  transform: translateX(-50%) translateY(-16px);
-}
+.fade-enter-active, .fade-leave-active { transition: all 0.4s ease; }
+.fade-enter-from { opacity: 0; transform: translateX(-50%) translateY(-16px); }
+.fade-leave-to { opacity: 0; transform: translateX(-50%) translateY(-16px); }
 </style>

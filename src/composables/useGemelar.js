@@ -1,27 +1,12 @@
-import { reactive, watch, toRefs } from 'vue'
+import { reactive, watch, computed } from 'vue'
 
 /**
  * useGemelar — Composable central do app
  * Gerencia estado global e persistência em localStorage
+ * v2: Focado em evolução da gestação com níveis
  */
 
-const STORAGE_KEY = 'gemelar-dados'
-
-// Sugestões iniciais de nomes (curtos, clássicos, modernos)
-const nomesIniciais = [
-  { id: 1, nome: 'Luna', favoritado: false },
-  { id: 2, nome: 'Aurora', favoritado: false },
-  { id: 3, nome: 'Noah', favoritado: false },
-  { id: 4, nome: 'Theo', favoritado: false },
-  { id: 5, nome: 'Maya', favoritado: false },
-  { id: 6, nome: 'Gael', favoritado: false },
-  { id: 7, nome: 'Iris', favoritado: false },
-  { id: 8, nome: 'Luca', favoritado: false },
-  { id: 9, nome: 'Flora', favoritado: false },
-  { id: 10, nome: 'Enzo', favoritado: false },
-  { id: 11, nome: 'Olívia', favoritado: false },
-  { id: 12, nome: 'Ravi', favoritado: false },
-]
+const STORAGE_KEY = 'gemelar-dados-v2'
 
 function loadFromStorage() {
   try {
@@ -47,33 +32,46 @@ function saveToStorage(data) {
 const saved = loadFromStorage()
 
 const state = reactive({
+  // Navegação
   currentScreen: saved?.currentScreen || 'semanas',
-  selectedPair: saved?.selectedPair || 'lua-sol',
-  babyNames: saved?.babyNames || [...nomesIniciais],
-  diaryEntries: saved?.diaryEntries || [],
-  hasEntered: saved?.hasEntered || false,
-  motherName: saved?.motherName || '',
-  currentWeek: saved?.currentWeek || 20,
+
+  // Onboarding
   onboardingCompleted: saved?.onboardingCompleted || false,
-  babyGenders: saved?.babyGenders || null,
-  chosenBabyNames: saved?.chosenBabyNames || [],
+  motherName: saved?.motherName || '',
+  gestationType: saved?.gestationType || null, // 'identicos', 'fraternos', 'nao-sei'
+  currentWeek: saved?.currentWeek || 20,
+  dpp: saved?.dpp || null, // ISO date string
+
+  // Diário
+  diaryEntries: saved?.diaryEntries || [],
+
+  // Progresso / Níveis
+  xp: saved?.xp || 0,
+  cuidadosLidos: saved?.cuidadosLidos || [], // IDs de cuidados que já abriu
+
+  // Legado (manter para não perder dados de quem já usou)
+  hasEntered: saved?.hasEntered || false,
 })
 
 // Auto-save quando o estado muda
 watch(
-  () => ({ ...state, babyNames: [...state.babyNames], diaryEntries: [...state.diaryEntries] }),
+  () => ({
+    ...state,
+    diaryEntries: [...state.diaryEntries],
+    cuidadosLidos: [...state.cuidadosLidos],
+  }),
   () => {
     saveToStorage({
       currentScreen: state.currentScreen,
-      selectedPair: state.selectedPair,
-      babyNames: state.babyNames,
-      diaryEntries: state.diaryEntries,
-      hasEntered: state.hasEntered,
-      motherName: state.motherName,
-      currentWeek: state.currentWeek,
       onboardingCompleted: state.onboardingCompleted,
-      babyGenders: state.babyGenders,
-      chosenBabyNames: state.chosenBabyNames,
+      motherName: state.motherName,
+      gestationType: state.gestationType,
+      currentWeek: state.currentWeek,
+      dpp: state.dpp,
+      diaryEntries: state.diaryEntries,
+      xp: state.xp,
+      cuidadosLidos: state.cuidadosLidos,
+      hasEntered: state.hasEntered,
     })
   },
   { deep: true }
@@ -81,45 +79,18 @@ watch(
 
 export function useGemelar() {
 
+  // ── Navegação ──
   function navigateTo(screen) {
     state.currentScreen = screen
-    if (screen !== 'abertura') {
-      state.hasEntered = true
-    }
+    state.hasEntered = true
   }
 
-  function selectPair(pair) {
-    state.selectedPair = pair
-  }
-
-  function toggleFavorite(id) {
-    const name = state.babyNames.find(n => n.id === id)
-    if (name) {
-      name.favoritado = !name.favoritado
-    }
-  }
-
-  function addName(nome) {
-    const maxId = Math.max(...state.babyNames.map(n => n.id), 0)
-    state.babyNames.push({
-      id: maxId + 1,
-      nome,
-      favoritado: false,
-    })
-  }
-
-  function removeName(id) {
-    const index = state.babyNames.findIndex(n => n.id === id)
-    if (index > -1) {
-      state.babyNames.splice(index, 1)
-    }
-  }
-
+  // ── Diário ──
   function addDiaryEntry(texto, autor = 'mae') {
     state.diaryEntries.unshift({
       id: Date.now(),
       texto,
-      autor, // 'mae' (elemento 1) ou 'parceiro' (elemento 2)
+      autor,
       data: new Date().toLocaleDateString('pt-BR', {
         day: 'numeric',
         month: 'long',
@@ -129,73 +100,109 @@ export function useGemelar() {
         minute: '2-digit',
       }),
     })
+    addXp(15) // XP por escrever no diário
   }
 
-  // Cores do par selecionado
-  function getPairColors() {
-    const pairs = {
-      'lua-sol': {
-        primary: 'var(--color-lua)', secondary: 'var(--color-sol)',
-        bgFrom: 'var(--color-lua-claro)', bgTo: 'var(--color-sol-claro)',
-        name1: 'Lua', name2: 'Sol', emoji1: '🌙', emoji2: '☀️',
-      },
-      'agua-fogo': {
-        primary: 'var(--color-agua)', secondary: 'var(--color-fogo)',
-        bgFrom: 'var(--color-agua-claro)', bgTo: 'var(--color-fogo-claro)',
-        name1: 'Água', name2: 'Fogo', emoji1: '💧', emoji2: '🔥',
-      },
-      'terra-ar': {
-        primary: 'var(--color-terra)', secondary: 'var(--color-ar)',
-        bgFrom: 'var(--color-terra-claro)', bgTo: 'var(--color-ar-claro)',
-        name1: 'Terra', name2: 'Ar', emoji1: '🌿', emoji2: '☁️',
-      },
-      'dia-noite': {
-        primary: 'var(--color-dia)', secondary: 'var(--color-noite)',
-        bgFrom: 'var(--color-dia-claro)', bgTo: 'var(--color-noite-claro)',
-        name1: 'Dia', name2: 'Noite', emoji1: '🌅', emoji2: '🌌',
-      },
-      'flor-folha': {
-        primary: 'var(--color-flor)', secondary: 'var(--color-folha)',
-        bgFrom: 'var(--color-flor-claro)', bgTo: 'var(--color-folha-claro)',
-        name1: 'Flor', name2: 'Folha', emoji1: '🌸', emoji2: '🍃',
-      },
-      'rio-montanha': {
-        primary: 'var(--color-rio)', secondary: 'var(--color-montanha)',
-        bgFrom: 'var(--color-rio-claro)', bgTo: 'var(--color-montanha-claro)',
-        name1: 'Rio', name2: 'Montanha', emoji1: '🏞️', emoji2: '⛰️',
-      },
-      'estrela-cometa': {
-        primary: 'var(--color-estrela)', secondary: 'var(--color-cometa)',
-        bgFrom: 'var(--color-estrela-claro)', bgTo: 'var(--color-cometa-claro)',
-        name1: 'Estrela', name2: 'Cometa', emoji1: '⭐', emoji2: '☄️',
-      },
-      'nuvem-arco': {
-        primary: 'var(--color-nuvem)', secondary: 'var(--color-arco)',
-        bgFrom: 'var(--color-nuvem-claro)', bgTo: 'var(--color-arco-claro)',
-        name1: 'Nuvem', name2: 'Arco-íris', emoji1: '💭', emoji2: '🌈',
-      },
-      'gato-cachorro': {
-        primary: 'var(--color-gatinho)', secondary: 'var(--color-cachorro)',
-        bgFrom: 'var(--color-gatinho-claro)', bgTo: 'var(--color-cachorro-claro)',
-        name1: 'Gatinho', name2: 'Cachorrinho', emoji1: '🐱', emoji2: '🐶',
-      },
-      'urso-coelho': {
-        primary: 'var(--color-ursinho)', secondary: 'var(--color-coelhinho)',
-        bgFrom: 'var(--color-ursinho-claro)', bgTo: 'var(--color-coelhinho-claro)',
-        name1: 'Ursinho', name2: 'Coelhinho', emoji1: '🐻', emoji2: '🐰',
-      },
+  // ── XP e Níveis ──
+  function addXp(amount) {
+    state.xp += amount
+  }
+
+  /**
+   * Nível baseado no XP acumulado
+   * Cada nível precisa de mais XP que o anterior
+   * Nível 1: 0 XP, Nível 2: 30 XP, Nível 3: 80 XP, etc.
+   */
+  const nivel = computed(() => {
+    const xp = state.xp
+    if (xp < 30) return 1
+    if (xp < 80) return 2
+    if (xp < 150) return 3
+    if (xp < 250) return 4
+    if (xp < 400) return 5
+    if (xp < 600) return 6
+    if (xp < 850) return 7
+    if (xp < 1150) return 8
+    if (xp < 1500) return 9
+    return 10
+  })
+
+  const xpParaProximoNivel = computed(() => {
+    const limites = [0, 30, 80, 150, 250, 400, 600, 850, 1150, 1500, 9999]
+    const nivelAtual = nivel.value
+    return limites[nivelAtual] // XP necessário para o próximo nível
+  })
+
+  const xpDoNivelAtual = computed(() => {
+    const limites = [0, 30, 80, 150, 250, 400, 600, 850, 1150, 1500]
+    const nivelAtual = nivel.value
+    return limites[nivelAtual - 1] // XP onde o nível atual começa
+  })
+
+  const progressoNivel = computed(() => {
+    const inicio = xpDoNivelAtual.value
+    const fim = xpParaProximoNivel.value
+    const range = fim - inicio
+    if (range <= 0) return 100
+    return Math.min(100, ((state.xp - inicio) / range) * 100)
+  })
+
+  const tituloNivel = computed(() => {
+    const titulos = [
+      'Sementinha', 'Brotinho', 'Florzinha', 'Estrelinha', 'Solzinho',
+      'Arco-Íris', 'Borboleta', 'Lua Cheia', 'Supermãe', 'Lendária'
+    ]
+    return titulos[nivel.value - 1] || 'Sementinha'
+  })
+
+  // ── Cuidados ──
+  function marcarCuidadoLido(id) {
+    if (!state.cuidadosLidos.includes(id)) {
+      state.cuidadosLidos.push(id)
+      addXp(10)
     }
-    return pairs[state.selectedPair] || pairs['lua-sol']
+  }
+
+  // ── DPP e Cálculos ──
+  const diasParaDPP = computed(() => {
+    if (!state.dpp) return null
+    const hoje = new Date()
+    const dpp = new Date(state.dpp)
+    const diff = dpp - hoje
+    return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)))
+  })
+
+  const trimestre = computed(() => {
+    const s = state.currentWeek
+    if (s <= 13) return 1
+    if (s <= 27) return 2
+    return 3
+  })
+
+  const progressoGestacao = computed(() => {
+    // Progresso de 4 a 38 semanas
+    return Math.min(100, ((state.currentWeek - 4) / (38 - 4)) * 100)
+  })
+
+  // ── Reset ──
+  function resetOnboarding() {
+    state.onboardingCompleted = false
   }
 
   return {
     state,
     navigateTo,
-    selectPair,
-    toggleFavorite,
-    addName,
-    removeName,
     addDiaryEntry,
-    getPairColors,
+    addXp,
+    nivel,
+    xpParaProximoNivel,
+    xpDoNivelAtual,
+    progressoNivel,
+    tituloNivel,
+    marcarCuidadoLido,
+    diasParaDPP,
+    trimestre,
+    progressoGestacao,
+    resetOnboarding,
   }
 }

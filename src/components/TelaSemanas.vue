@@ -1,18 +1,17 @@
 <template>
   <div class="tela-semanas">
+    <!-- Header: Saudação + Nível -->
     <div class="tela-header">
-      <!-- Mundinho girando com o par -->
-      <div class="mundinho-girando">
-        <div class="orbita">
-          <div class="astro astro-1">{{ parAtual.emoji1 }}</div>
-          <div class="astro astro-2">{{ parAtual.emoji2 }}</div>
+      <div class="header-esq">
+        <p class="saudacao">Olá, <strong>{{ state.motherName || 'mamãe' }}</strong> 💕</p>
+        <div class="nivel-badge glass">
+          <span class="nivel-estrela">⭐</span>
+          <span class="nivel-texto">Nível {{ nivel }} — {{ tituloNivel }}</span>
         </div>
-        <div class="mundo-centro">🌍</div>
       </div>
-      
-      <div class="botoes-topo">
+      <div class="header-dir">
         <BotaoOuvir :texto-para-ler="textoCompleto" />
-        <button class="btn-config glass" @click="refazerOnboarding" aria-label="Ajustar Nomes ou Par">
+        <button class="btn-config glass" @click="resetOnboarding" aria-label="Ajustar dados">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none">
             <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9c.26.6.8.97 1.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -21,104 +20,96 @@
       </div>
     </div>
 
-    <!-- Saudação da mamãe -->
-    <div class="saudacao-area glass">
-      <p class="saudacao-texto">
-        Olá, <strong>{{ state.motherName || 'mamãe' }}</strong>. 💕
-      </p>
-      <p class="saudacao-sub">Seus bebês estão crescendo.</p>
+    <!-- Barra de XP -->
+    <div class="xp-container glass">
+      <div class="xp-info">
+        <span class="xp-label">{{ state.xp }} XP</span>
+        <span class="xp-proximo">Nível {{ nivel + 1 }}</span>
+      </div>
+      <div class="xp-barra">
+        <div class="xp-preenchido" :style="{ width: progressoNivel + '%' }"></div>
+      </div>
     </div>
 
-    <!-- Visual de crescimento dual -->
-    <div class="crescimento-area">
-      <!-- Indicador de semana (sutil, só a palavra) -->
-      <motion.div
-        :key="'semana-label-' + semanaAtual"
-        class="semana-label"
-        :initial="{ opacity: 0, y: -10 }"
-        :animate="{ opacity: 1, y: 0 }"
-        :transition="{ duration: 0.4 }"
-      >
-        <span class="semana-badge glass">{{ dadosSemana.label }}</span>
-      </motion.div>
-
-      <!-- Dois círculos lado a lado -->
-      <div class="circulos-container">
-        <!-- Círculo A (Elemento 1 do par) -->
-        <motion.div
-          :key="'circuloA-' + semanaAtual"
-          class="circulo-wrapper"
-          :initial="{ scale: 0, opacity: 0 }"
-          :animate="{ scale: 1, opacity: 1 }"
-          :transition="{ type: 'spring', stiffness: 180, damping: 18, delay: 0.1 }"
-        >
-          <div
-            class="circulo circulo-a"
-            :style="{ background: gradienteA }"
-          >
-            <span class="circulo-emoji" :style="{ fontSize: emojiSize }">{{ dadosSemana.emoji }}</span>
-          </div>
-          <span class="circulo-nome">{{ nomeElemento1 }}</span>
-        </motion.div>
-
-        <!-- Conexão animada entre os dois -->
-        <div class="conexao-semanas">
-          <svg viewBox="0 0 40 20" width="32" height="16">
-            <path d="M4 10 Q12 2 20 10 Q28 18 36 10" stroke="var(--color-rosa-suave)" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.6"/>
-          </svg>
+    <!-- Card central: Bebê da semana -->
+    <Transition name="fade-slide" mode="out-in">
+      <div :key="semanaAtual" class="semana-card glass">
+        <div class="semana-badge-top">
+          <span class="semana-badge-texto">{{ dados.label }}</span>
+          <span v-if="trimestre" class="trimestre-tag" :class="'tri-' + trimestre">{{ trimestre }}º trimestre</span>
         </div>
 
-        <!-- Círculo B (Elemento 2 do par) -->
-        <motion.div
-          :key="'circuloB-' + semanaAtual"
-          class="circulo-wrapper"
-          :initial="{ scale: 0, opacity: 0 }"
-          :animate="{ scale: 1, opacity: 1 }"
-          :transition="{ type: 'spring', stiffness: 180, damping: 18, delay: 0.25 }"
-        >
-          <div
-            class="circulo circulo-b"
-            :style="{ background: gradienteB }"
-          >
-            <span class="circulo-emoji" :style="{ fontSize: emojiSize }">{{ dadosSemana.emoji }}</span>
+        <div class="bebe-visual">
+          <div class="bebe-circulo" :style="{ width: circuloSize + 'px', height: circuloSize + 'px' }">
+            <span class="bebe-emoji" :style="{ fontSize: emojiSize }">{{ dados.emoji }}</span>
           </div>
-          <span class="circulo-nome">{{ nomeElemento2 }}</span>
+        </div>
+
+        <div class="bebe-info">
+          <p class="bebe-tamanho">Cada bebê está do tamanho de <strong>{{ dados.tamanho }}</strong></p>
+          <div class="bebe-medidas">
+            <span class="medida">📏 {{ dados.comprimento }}</span>
+            <span class="medida">⚖️ {{ dados.peso }}</span>
+          </div>
+        </div>
+
+        <p class="bebe-marco">{{ dados.marco }}</p>
+        <p class="bebe-carinho">{{ dados.carinho }}</p>
+      </div>
+    </Transition>
+
+    <!-- Conquista da semana (se houver) -->
+    <Transition name="fade-slide">
+      <div v-if="conquista" class="conquista-card glass">
+        <span class="conquista-emoji">{{ conquista.emoji }}</span>
+        <div class="conquista-textos">
+          <strong>🏆 {{ conquista.titulo }}</strong>
+          <small>{{ conquista.descricao }}</small>
+        </div>
+      </div>
+    </Transition>
+
+    <!-- Cuidados da semana -->
+    <div class="cuidados-semana">
+      <h2 class="secao-titulo">Cuidados da semana 🌿</h2>
+      <div class="cuidados-lista">
+        <motion.div
+          v-for="(cuidado, index) in dados.cuidados"
+          :key="semanaAtual + '-' + index"
+          class="cuidado-card glass"
+          :class="{ 'cuidado-lido': isCuidadoLido(semanaAtual + '-' + index) }"
+          @click="lerCuidado(semanaAtual + '-' + index)"
+          :initial="{ opacity: 0, y: 12 }"
+          :animate="{ opacity: 1, y: 0 }"
+          :transition="{ delay: index * 0.1 }"
+        >
+          <span class="cuidado-icone">{{ cuidado.icone }}</span>
+          <span class="cuidado-texto">{{ cuidado.texto }}</span>
+          <span v-if="!isCuidadoLido(semanaAtual + '-' + index)" class="cuidado-xp">+10 XP</span>
+          <span v-else class="cuidado-check">✅</span>
         </motion.div>
       </div>
-
-      <!-- Frase afetiva -->
-      <motion.div
-        :key="'frase-' + semanaAtual"
-        class="frase-area"
-        :initial="{ opacity: 0, y: 16 }"
-        :animate="{ opacity: 1, y: 0 }"
-        :transition="{ delay: 0.4, duration: 0.6 }"
-      >
-        <p class="frase-principal">{{ frasePersonalizada }}</p>
-        <p class="frase-dual">{{ fraseDual }}</p>
-      </motion.div>
-
-      <!-- Frase de carinho extra -->
-      <motion.p
-        :key="'carinho-' + semanaAtual"
-        class="frase-carinho"
-        :initial="{ opacity: 0 }"
-        :animate="{ opacity: 1 }"
-        :transition="{ delay: 0.7 }"
-      >
-        {{ dadosSemana.carinho }}
-      </motion.p>
     </div>
 
-    <!-- Trilha visual com pontinhos duplos -->
-    <div class="trilha-visual">
-      <div class="trilha-linha"></div>
-      <div
-        class="trilha-indicador"
-        :style="{ left: trilhaPercent + '%' }"
-      >
-        <span class="trilha-dot dot-a" :style="{ background: corA }"></span>
-        <span class="trilha-dot dot-b" :style="{ background: corB }"></span>
+    <!-- Barra de progresso da gestação -->
+    <div class="progresso-gestacao">
+      <div class="progresso-header">
+        <span class="progresso-label">Progresso da gestação</span>
+        <span v-if="diasParaDPP !== null" class="progresso-dpp">{{ diasParaDPP }} dias para o DPP</span>
+      </div>
+      <div class="progresso-barra">
+        <div class="progresso-preenchido" :style="{ width: progressoGestacao + '%' }"></div>
+        <div class="progresso-marcadores">
+          <span class="marcador" style="left: 0%">4</span>
+          <span class="marcador" style="left: 26.5%">13</span>
+          <span class="marcador" style="left: 67.6%">27</span>
+          <span class="marcador" style="left: 100%">38</span>
+        </div>
+      </div>
+      <div class="progresso-trimestres">
+        <span class="tri-label">1º tri</span>
+        <span class="tri-label">2º tri</span>
+        <span class="tri-label">3º tri</span>
       </div>
     </div>
 
@@ -126,26 +117,26 @@
     <div class="nav-semanas">
       <motion.button
         class="nav-btn glass"
-        :whilePress="{ scale: 0.92 }"
+        :whileTap="{ scale: 0.92 }"
         @click="semanaAnterior"
         :disabled="semanaAtual <= 4"
         aria-label="Semana anterior"
       >
-        <svg viewBox="0 0 24 24" width="28" height="28" fill="none">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none">
           <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
-        <span class="nav-btn-label">Anterior</span>
+        <span>Anterior</span>
       </motion.button>
 
       <motion.button
         class="nav-btn glass"
-        :whilePress="{ scale: 0.92 }"
+        :whileTap="{ scale: 0.92 }"
         @click="proximaSemana"
-        :disabled="semanaAtual >= 32"
+        :disabled="semanaAtual >= 38"
         aria-label="Próxima semana"
       >
-        <span class="nav-btn-label">Próxima</span>
-        <svg viewBox="0 0 24 24" width="28" height="28" fill="none">
+        <span>Próxima</span>
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none">
           <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </motion.button>
@@ -154,172 +145,115 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { computed } from 'vue'
 import { motion } from 'motion-v'
 import { useGemelar } from '../composables/useGemelar.js'
+import { useSemanaData, getConquista } from '../composables/useSemanaData.js'
 import BotaoOuvir from './BotaoOuvir.vue'
 
-const { state, getPairColors } = useGemelar()
+const {
+  state, nivel, tituloNivel, progressoNivel,
+  marcarCuidadoLido, diasParaDPP, trimestre,
+  progressoGestacao, resetOnboarding,
+} = useGemelar()
 
 const semanaAtual = computed({
   get: () => state.currentWeek,
   set: (val) => { state.currentWeek = val },
 })
 
-// ── Dados das semanas ──
-const semanas = {
-  4:  { emoji: '🌱', objeto: 'semente de papoula', plural: 'Duas sementes de papoula', genero: 'f', frase: 'Cada um dos seus bebês é do tamanho de uma sementinha.', carinho: 'Tudo começa pequeno. E lindo. 💛' },
-  5:  { emoji: '🌾', objeto: 'semente de gergelim', plural: 'Duas sementes de gergelim', genero: 'f', frase: 'Seus bebês são como grãozinhos de gergelim.', carinho: 'Pequeninhos, mas já cheios de vida. ✨' },
-  6:  { emoji: '🫘', objeto: 'grão de lentilha', plural: 'Dois grãozinhos de lentilha', genero: 'm', frase: 'Cada bebê está do tamanho de uma lentilha.', carinho: 'O coraçãozinho deles já está se formando. 💕' },
-  7:  { emoji: '🫐', objeto: 'amora', plural: 'Duas amoras', genero: 'f', frase: 'Seus bebês estão do tamanho de uma amora.', carinho: 'Doces e perfeitos, como você. 🥰' },
-  8:  { emoji: '🫘', objeto: 'feijão', plural: 'Dois feijõezinhos', genero: 'm', frase: 'Cada bebê está do tamanho de um feijão.', carinho: 'Eles já começam a se mexer! 💫' },
-  9:  { emoji: '🍇', objeto: 'uva', plural: 'Duas uvas', genero: 'f', frase: 'Seus bebês estão do tamanho de uma uva.', carinho: 'Você está fazendo um trabalho incrível. 🌸' },
-  10: { emoji: '🫒', objeto: 'azeitona', plural: 'Duas azeitonas', genero: 'f', frase: 'Cada bebê está do tamanho de uma azeitona.', carinho: 'Os dedinhos deles já estão se formando. 🤏' },
-  11: { emoji: '🍈', objeto: 'figo', plural: 'Dois figos', genero: 'm', frase: 'Seus bebês estão do tamanho de um figo.', carinho: 'Eles já conseguem engolir! Que fofos. 💜' },
-  12: { emoji: '🍋‍🟩', objeto: 'lima', plural: 'Duas limas', genero: 'f', frase: 'Cada bebê está do tamanho de uma lima.', carinho: 'Os reflexos deles estão aparecendo. ✨' },
-  13: { emoji: '🫛', objeto: 'ervilha torta', plural: 'Duas ervilhas tortas', genero: 'f', frase: 'Seus bebês estão do tamanho de uma ervilha torta.', carinho: 'As impressões digitais deles já são únicas. 🌟' },
-  14: { emoji: '🍋', objeto: 'limão-siciliano', plural: 'Dois limões-sicilianos', genero: 'm', frase: 'Cada bebê está do tamanho de um limão-siciliano.', carinho: 'Eles já fazem caretinhas! 😊' },
-  15: { emoji: '🍎', objeto: 'maçã', plural: 'Duas maçãs', genero: 'f', frase: 'Seus bebês estão do tamanho de uma maçã.', carinho: 'Você é a casa mais quentinha do mundo. 🏠💕' },
-  16: { emoji: '🥑', objeto: 'abacate', plural: 'Dois abacates', genero: 'm', frase: 'Cada bebê está do tamanho de um abacate.', carinho: 'As perninhas deles já são maiores que os braços! 🦵' },
-  17: { emoji: '🍑', objeto: 'romã', plural: 'Duas romãs', genero: 'f', frase: 'Seus bebês estão do tamanho de uma romã.', carinho: 'O esqueleto deles está ficando mais forte. 💪' },
-  18: { emoji: '🍑', objeto: 'mamão-papaia', plural: 'Dois mamões', genero: 'm', frase: 'Cada bebê está do tamanho de um mamão-papaia.', carinho: 'Eles já ouvem sua voz! Converse com eles. 🗣️💛' },
-  19: { emoji: '🍊', objeto: 'toranja', plural: 'Duas toranjas', genero: 'f', frase: 'Seus bebês estão do tamanho de uma toranja.', carinho: 'Os sentidos deles estão se desenvolvendo. 🌈' },
-  20: { emoji: '🍌', objeto: 'banana', plural: 'Duas bananas', genero: 'f', frase: 'Cada bebê está do tamanho de uma banana.', carinho: 'Metade do caminho! Você é incrível. 🌟🌟' },
-  21: { emoji: '🥕', objeto: 'cenoura', plural: 'Duas cenouras', genero: 'f', frase: 'Seus bebês estão do tamanho de uma cenoura.', carinho: 'Eles já fazem movimentos que você pode sentir. 🤰' },
-  22: { emoji: '🎃', objeto: 'abóbora pequena', plural: 'Duas abóboras', genero: 'f', frase: 'Cada bebê está do tamanho de uma abóbora pequena.', carinho: 'Os olhinhos deles já se formaram! 👀' },
-  23: { emoji: '🥭', objeto: 'manga', plural: 'Duas mangas', genero: 'f', frase: 'Seus bebês estão do tamanho de uma manga.', carinho: 'A pele deles está ficando mais rosadinha. 🌷' },
-  24: { emoji: '🍈', objeto: 'melão', plural: 'Dois melões', genero: 'm', frase: 'Cada bebê está do tamanho de um melão.', carinho: 'Eles já têm cílios e sobrancelhas! 😍' },
-  25: { emoji: '🥒', objeto: 'pepino', plural: 'Dois pepinos', genero: 'm', frase: 'Seus bebês estão do tamanho de um pepino.', carinho: 'Eles respondem à sua voz e ao toque. 🫶' },
-  26: { emoji: '🥦', objeto: 'couve-flor', plural: 'Duas couves-flores', genero: 'f', frase: 'Cada bebê está do tamanho de uma couve-flor.', carinho: 'Os olhinhos deles já abrem e fecham! ✨' },
-  27: { emoji: '🥬', objeto: 'alface', plural: 'Duas alfaces', genero: 'f', frase: 'Seus bebês estão do tamanho de uma alface.', carinho: 'O cérebro deles está crescendo muito rápido. 🧠💜' },
-  28: { emoji: '🍆', objeto: 'berinjela', plural: 'Duas berinjelas', genero: 'f', frase: 'Cada bebê está do tamanho de uma berinjela.', carinho: 'Eles já sonham! Será que sonham com você? 🌙' },
-  29: { emoji: '🎃', objeto: 'abóbora japonesa', plural: 'Duas abóboras japonesas', genero: 'f', frase: 'Seus bebês estão do tamanho de uma abóbora japonesa.', carinho: 'Eles estão ganhando gordurinhas fofinhas. 🥰' },
-  30: { emoji: '🥒', objeto: 'pepino grande', plural: 'Dois pepinos grandes', genero: 'm', frase: 'Cada bebê está do tamanho de um pepino grande.', carinho: 'Eles já sabem a diferença entre claro e escuro! 🌓' },
-  31: { emoji: '🥬', objeto: 'repolho', plural: 'Dois repolhos', genero: 'm', frase: 'Seus bebês estão do tamanho de um repolho.', carinho: 'Os pulmões deles estão quase prontos. Falta pouquinho! 🌬️' },
-  32: { emoji: '🎃', objeto: 'abóbora', plural: 'Duas abóboras', genero: 'f', frase: 'Cada bebê está do tamanho de uma abóbora.', carinho: 'Seus bebês estão quase prontos pra te conhecer. 💕💕' },
-}
+const { dados } = useSemanaData(semanaAtual)
 
-const dadosSemana = computed(() => {
-  const dados = semanas[semanaAtual.value]
-  if (!dados) return semanas[20] // fallback
-  return {
-    ...dados,
-    label: `Semana ${semanaAtual.value}`,
-  }
+const conquista = computed(() => getConquista(semanaAtual.value))
+
+// Tamanho do círculo e emoji baseado na semana
+const circuloSize = computed(() => {
+  const min = 100
+  const max = 180
+  const progress = (semanaAtual.value - 4) / (38 - 4)
+  return Math.round(min + (max - min) * progress)
 })
 
-// ── Cores e nomes do par selecionado ──
-const pairConfig = {
-  'lua-sol': {
-    nome1: 'Lua', nome2: 'Sol',
-    corA: 'var(--color-lua)', corB: 'var(--color-sol)',
-    gradA: 'linear-gradient(135deg, var(--color-lua-claro) 0%, var(--color-lua-medio) 100%)',
-    gradB: 'linear-gradient(135deg, var(--color-sol-claro) 0%, var(--color-sol-medio) 100%)',
-    rawA: '#C5AEEA', rawB: '#FFE08A',
-  },
-  'agua-fogo': {
-    nome1: 'Água', nome2: 'Fogo',
-    corA: 'var(--color-agua)', corB: 'var(--color-fogo)',
-    gradA: 'linear-gradient(135deg, var(--color-agua-claro) 0%, var(--color-agua-medio) 100%)',
-    gradB: 'linear-gradient(135deg, var(--color-fogo-claro) 0%, var(--color-fogo-medio) 100%)',
-    rawA: '#A0DDD6', rawB: '#FFB88A',
-  },
-  'terra-ar': {
-    nome1: 'Terra', nome2: 'Ar',
-    corA: 'var(--color-terra)', corB: 'var(--color-ar)',
-    gradA: 'linear-gradient(135deg, var(--color-terra-claro) 0%, var(--color-terra-medio) 100%)',
-    gradB: 'linear-gradient(135deg, var(--color-ar-claro) 0%, var(--color-ar-medio) 100%)',
-    rawA: '#AED49A', rawB: '#A8E0EE',
-  },
-}
-
-const parAtual = computed(() => getPairColors())
-const nomeElemento1 = computed(() => parAtual.value.name1)
-const nomeElemento2 = computed(() => parAtual.value.name2)
-const gradienteA = computed(() => parAtual.value.bgFrom)
-const gradienteB = computed(() => parAtual.value.bgTo)
-const corA = computed(() => parAtual.value.primary)
-const corB = computed(() => parAtual.value.secondary)
-
-// Frase principal usando os nomes escolhidos
-const frasePersonalizada = computed(() => {
-  const dados = dadosSemana.value
-  let sujeitos = 'Cada bebê'
-  
-  if (state.chosenBabyNames && state.chosenBabyNames.length === 2) {
-    sujeitos = `${state.chosenBabyNames[0]} e ${state.chosenBabyNames[1]}`
-    return `${sujeitos} estão do tamanho de uma ${dados.objeto}.`
-  }
-  
-  if (state.babyGenders === 'boys') sujeitos = 'Cada menino'
-  else if (state.babyGenders === 'girls') sujeitos = 'Cada menina'
-
-  return `${sujeitos} está do tamanho de um(a) ${dados.objeto}.`
-})
-
-// Tamanho do emoji baseado na semana (cresce conforme avança)
 const emojiSize = computed(() => {
-  const min = 2.2  // rem na semana 4
-  const max = 4.0  // rem na semana 32
-  const progress = (semanaAtual.value - 4) / (32 - 4)
+  const min = 2.2
+  const max = 4.5
+  const progress = (semanaAtual.value - 4) / (38 - 4)
   return (min + (max - min) * progress).toFixed(1) + 'rem'
 })
 
-// Frase dual baseada no tema
-const fraseDual = computed(() => {
-  const dados = dadosSemana.value
-  const par = parAtual.value
-  return `${dados.plural}, crescendo como ${par.name1} e ${par.name2}. ${par.emoji1}${par.emoji2}`
-})
-
-// Trilha visual
-const trilhaPercent = computed(() => {
-  return ((semanaAtual.value - 4) / (32 - 4)) * 100
-})
-
-// Texto completo para leitura
-const textoCompleto = computed(() => {
-  const nome = state.motherName ? `Olá, ${state.motherName}. ` : ''
-  const dados = dadosSemana.value
-  return `${nome}Crescendo juntos. ${dados.frase} ${fraseDual.value} ${dados.carinho}`
-})
-
-// ── Ações ──
-function refazerOnboarding() {
-  state.onboardingCompleted = false
+// Cuidados
+function isCuidadoLido(id) {
+  return state.cuidadosLidos.includes(id)
 }
 
+function lerCuidado(id) {
+  marcarCuidadoLido(id)
+}
+
+// Navegação
 function semanaAnterior() {
-  if (semanaAtual.value > 4) {
-    semanaAtual.value--
-  }
+  if (semanaAtual.value > 4) semanaAtual.value--
 }
 
 function proximaSemana() {
-  if (semanaAtual.value < 32) {
-    semanaAtual.value++
-  }
+  if (semanaAtual.value < 38) semanaAtual.value++
 }
+
+// Leitura
+const textoCompleto = computed(() => {
+  const d = dados.value
+  const nome = state.motherName ? `Olá, ${state.motherName}. ` : ''
+  return `${nome}${d.label}. ${d.frase} ${d.marco} ${d.carinho}`
+})
 </script>
 
 <style scoped>
 .tela-semanas {
-  padding: 20px 16px 100px 16px;
+  padding: 16px 16px 110px 16px;
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
+  gap: 16px;
 }
 
+/* ── Header ── */
 .tela-header {
   display: flex;
-  align-items: flex-start;
   justify-content: space-between;
-  margin-bottom: 24px;
+  align-items: flex-start;
+  padding-top: 4px;
 }
 
-.botoes-topo {
+.header-esq {
+  flex: 1;
+}
+
+.saudacao {
+  font-family: var(--font-titulo);
+  font-size: 1.1rem;
+  color: var(--color-texto);
+  margin: 0 0 6px 0;
+}
+
+.nivel-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-roxo-intenso);
+}
+
+.nivel-estrela {
+  font-size: 1rem;
+}
+
+.header-dir {
   display: flex;
-  gap: 12px;
+  gap: 8px;
+  align-items: center;
 }
 
 .btn-config {
@@ -334,128 +268,98 @@ function proximaSemana() {
 }
 .btn-config:active { transform: scale(0.9); }
 
-/* ── Mundinho Girando ── */
-.mundinho-girando {
-  position: relative;
-  width: 80px;
-  height: 80px;
+/* ── Barra de XP ── */
+.xp-container {
+  padding: 12px 16px;
+  border-radius: var(--radius-lg);
+}
+
+.xp-info {
   display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.mundo-centro {
-  font-size: 2.2rem;
-  z-index: 2;
-  animation: pulsar-suave 4s infinite;
-}
-.orbita {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  animation: girar 10s linear infinite;
-}
-.astro {
-  position: absolute;
-  font-size: 1.4rem;
-  animation: counter-girar 10s linear infinite; /* Para o emoji não ficar de cabeça pra baixo */
-}
-.astro-1 { top: -10px; left: 50%; transform: translateX(-50%); }
-.astro-2 { bottom: -10px; left: 50%; transform: translateX(-50%); }
-
-@keyframes girar { 100% { transform: rotate(360deg); } }
-@keyframes counter-girar { 100% { transform: rotate(-360deg); } }
-
-/* ── Saudação ── */
-.saudacao-area {
-  padding: 16px 20px;
-  border-radius: var(--radius-xl);
-  margin-bottom: 24px;
-  text-align: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
 }
 
-.saudacao-texto {
+.xp-label {
   font-family: var(--font-titulo);
-  font-size: 1.05rem;
-  color: var(--color-texto);
-  margin: 0 0 2px 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-roxo-intenso);
 }
 
-.saudacao-sub {
-  font-size: 0.9rem;
+.xp-proximo {
+  font-size: 0.75rem;
   color: var(--color-texto-claro);
-  margin: 0;
-}
-
-.nome-editar {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: transparent;
-  color: var(--color-texto-claro);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0.5;
-  padding: 0;
-}
-
-/* ── Área de crescimento ── */
-.crescimento-area {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  padding: 8px 0;
-}
-
-.semana-label {
-  text-align: center;
-}
-
-.semana-badge {
-  display: inline-block;
-  padding: 6px 20px;
-  border-radius: var(--radius-full);
-  font-family: var(--font-titulo);
-  font-size: 0.85rem;
   font-weight: 600;
-  color: var(--color-texto-claro);
 }
 
-/* ── Círculos duais ── */
-.circulos-container {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 8px 0;
+.xp-barra {
+  height: 8px;
+  background: var(--color-xp-bar);
+  border-radius: var(--radius-full);
+  overflow: hidden;
 }
 
-.circulo-wrapper {
+.xp-preenchido {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-roxo-medio), var(--color-azul), var(--color-agua));
+  border-radius: var(--radius-full);
+  transition: width 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* ── Card central ── */
+.semana-card {
+  padding: 24px 20px;
+  border-radius: var(--radius-xl);
+  text-align: center;
+}
+
+.semana-badge-top {
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
   gap: 10px;
+  margin-bottom: 16px;
 }
 
-.circulo {
-  width: 130px;
-  height: 130px;
+.semana-badge-texto {
+  font-family: var(--font-titulo);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-roxo-intenso);
+}
+
+.trimestre-tag {
+  padding: 3px 12px;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+.tri-1 { background: var(--color-tri1); color: var(--color-roxo-intenso); }
+.tri-2 { background: var(--color-tri2); color: var(--color-azul-intenso); }
+.tri-3 { background: var(--color-tri3); color: var(--color-agua-intenso); }
+
+/* ── Visual do bebê ── */
+.bebe-visual {
+  display: flex;
+  justify-content: center;
+  margin: 8px 0 16px 0;
+}
+
+.bebe-circulo {
   border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-roxo-claro) 0%, var(--color-azul-claro) 50%, var(--color-agua-claro) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   box-shadow: var(--shadow-suave);
   animation: respirar 4s ease-in-out infinite;
+  transition: width 0.5s ease, height 0.5s ease;
   position: relative;
   overflow: hidden;
 }
 
-.circulo::after {
+.bebe-circulo::after {
   content: '';
   position: absolute;
   top: 12%;
@@ -467,136 +371,219 @@ function proximaSemana() {
   filter: blur(4px);
 }
 
-.circulo-a {
-  animation-delay: 0s;
-}
-
-.circulo-b {
-  animation-delay: 2s;
-}
-
-.circulo-emoji {
+.bebe-emoji {
   z-index: 1;
-  animation: balanco-suave 5s ease-in-out infinite;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
-.circulo-nome {
-  font-family: var(--font-titulo);
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--color-texto-claro);
+.bebe-info {
+  margin-bottom: 12px;
 }
 
-.conexao-semanas {
-  margin: 0 -4px;
-  animation: pulsar-suave 3s ease-in-out infinite;
-  align-self: center;
-  margin-bottom: 20px;
-}
-
-@keyframes respirar {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.04); }
-}
-
-@keyframes balanco-suave {
-  0%, 100% { transform: rotate(0deg); }
-  25% { transform: rotate(-3deg); }
-  75% { transform: rotate(3deg); }
-}
-
-/* ── Frases ── */
-.frase-area {
-  text-align: center;
-  max-width: 320px;
-  padding: 0 8px;
-}
-
-.frase-principal {
+.bebe-tamanho {
   font-family: var(--font-titulo);
   font-size: 1.1rem;
-  font-weight: 600;
   color: var(--color-texto);
-  line-height: 1.5;
-  margin: 0 0 6px 0;
+  margin: 0 0 8px 0;
+  line-height: 1.4;
 }
 
-.frase-dual {
-  font-family: var(--font-corpo);
-  font-size: 0.95rem;
+.bebe-medidas {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.medida {
+  font-size: 0.9rem;
   color: var(--color-texto-claro);
+  font-weight: 600;
+}
+
+.bebe-marco {
+  font-size: 1rem;
+  color: var(--color-texto);
+  font-weight: 600;
+  margin: 0 0 6px 0;
   line-height: 1.4;
+}
+
+.bebe-carinho {
+  font-size: 0.9rem;
+  color: var(--color-texto);
+  opacity: 0.7;
+  font-style: italic;
   margin: 0;
 }
 
-.frase-carinho {
-  font-family: var(--font-corpo);
+/* ── Conquista ── */
+.conquista-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 20px;
+  border-radius: var(--radius-lg);
+  border-left: 4px solid var(--color-roxo);
+}
+
+.conquista-emoji {
+  font-size: 2rem;
+}
+
+.conquista-textos strong {
+  display: block;
+  font-size: 1rem;
+  color: var(--color-roxo-intenso);
+}
+
+.conquista-textos small {
   font-size: 0.9rem;
+  color: var(--color-texto-claro);
+}
+
+/* ── Cuidados da semana ── */
+.secao-titulo {
+  font-size: 1.15rem;
   color: var(--color-texto);
-  text-align: center;
+  margin: 0 0 12px 0;
+}
+
+.cuidados-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cuidado-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cuidado-card:active {
+  transform: scale(0.98);
+}
+
+.cuidado-lido {
   opacity: 0.7;
-  font-style: italic;
-  margin: 4px 0 0 0;
-  max-width: 280px;
 }
 
-/* ── Trilha visual ── */
-.trilha-visual {
-  position: relative;
-  height: 20px;
-  margin: 12px 24px 8px 24px;
+.cuidado-icone {
+  font-size: 1.5rem;
+  flex-shrink: 0;
 }
 
-.trilha-linha {
-  position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
-  height: 4px;
+.cuidado-texto {
+  flex: 1;
+  font-size: 0.95rem;
+  color: var(--color-texto);
+  line-height: 1.4;
+}
+
+.cuidado-xp {
+  font-family: var(--font-titulo);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-roxo);
+  background: var(--color-roxo-claro);
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+.cuidado-check {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+/* ── Progresso gestação ── */
+.progresso-gestacao {
+  padding: 0 4px;
+}
+
+.progresso-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.progresso-label {
+  font-family: var(--font-titulo);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-texto);
+}
+
+.progresso-dpp {
+  font-size: 0.8rem;
+  color: var(--color-roxo);
+  font-weight: 600;
+}
+
+.progresso-barra {
+  height: 10px;
   background: var(--color-roxo-claro);
   border-radius: var(--radius-full);
-  transform: translateY(-50%);
+  overflow: visible;
+  position: relative;
 }
 
-.trilha-indicador {
+.progresso-preenchido {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-roxo-medio), var(--color-azul), var(--color-agua));
+  border-radius: var(--radius-full);
+  transition: width 0.5s ease;
+}
+
+.progresso-marcadores {
+  position: relative;
+  height: 0;
+}
+
+.marcador {
   position: absolute;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  top: 6px;
+  transform: translateX(-50%);
+  font-size: 0.7rem;
+  color: var(--color-texto-claro);
+  font-weight: 600;
+}
+
+.progresso-trimestres {
   display: flex;
-  gap: 4px;
-  transition: left 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  justify-content: space-around;
+  margin-top: 20px;
 }
 
-.trilha-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  transition: background 0.3s ease;
+.tri-label {
+  font-size: 0.75rem;
+  color: var(--color-texto-claro);
+  font-weight: 600;
 }
 
-/* ── Navegação de semanas ── */
+/* ── Navegação ── */
 .nav-semanas {
   display: flex;
   justify-content: space-between;
-  gap: 16px;
-  padding: 0 8px;
-  margin-top: 8px;
+  gap: 12px;
 }
 
 .nav-btn {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 14px 24px;
+  gap: 6px;
+  padding: 14px 22px;
   border-radius: var(--radius-xl);
   color: var(--color-texto);
   font-family: var(--font-titulo);
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
-  transition: opacity 0.2s ease, box-shadow 0.2s ease;
   box-shadow: var(--shadow-suave);
+  transition: opacity 0.2s ease;
 }
 
 .nav-btn:disabled {
@@ -608,24 +595,21 @@ function proximaSemana() {
   box-shadow: none;
 }
 
-.nav-btn-label {
-  font-size: 0.95rem;
-}
-
 /* ── Responsivo ── */
 @media (max-width: 360px) {
-  .circulo {
-    width: 105px;
-    height: 105px;
+  .bebe-circulo {
+    max-width: 140px !important;
+    max-height: 140px !important;
   }
 
   .nav-btn {
-    padding: 12px 18px;
-    font-size: 0.9rem;
+    padding: 12px 16px;
+    font-size: 0.85rem;
   }
 
-  .frase-principal {
-    font-size: 1rem;
+  .semana-badge-top {
+    flex-direction: column;
+    gap: 4px;
   }
 }
 </style>
