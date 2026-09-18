@@ -239,7 +239,11 @@ const nomeMaeTemp = ref(state.motherName || '')
 function avancarNome() {
   if (nomeMaeTemp.value.trim()) {
     state.motherName = nomeMaeTemp.value.trim()
-    passo.value++
+    if (tipoGestacaoTemp.value === 'unica') {
+      passo.value += 2 // Pula a pergunta de 'tipo de gêmeos'
+    } else {
+      passo.value++
+    }
   }
 }
 

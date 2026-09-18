@@ -44,6 +44,12 @@ const state = reactive({
   currentWeek: saved?.currentWeek || 20,
   dpp: saved?.dpp || null, // ISO date string
 
+  // Saúde e Acompanhamento
+  pesoAtual: saved?.pesoAtual || '',
+  altura: saved?.altura || '',
+  tipoSanguineoMae: saved?.tipoSanguineoMae || '',
+  tipoSanguineoPai: saved?.tipoSanguineoPai || '',
+
   // Diário
   diaryEntries: saved?.diaryEntries || [],
 
@@ -72,6 +78,10 @@ watch(
       gestationType: state.gestationType,
       currentWeek: state.currentWeek,
       dpp: state.dpp,
+      pesoAtual: state.pesoAtual,
+      altura: state.altura,
+      tipoSanguineoMae: state.tipoSanguineoMae,
+      tipoSanguineoPai: state.tipoSanguineoPai,
       diaryEntries: state.diaryEntries,
       xp: state.xp,
       cuidadosLidos: state.cuidadosLidos,

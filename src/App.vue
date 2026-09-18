@@ -26,6 +26,7 @@ import TelaOnboarding from './components/TelaOnboarding.vue'
 import TelaSemanas from './components/TelaSemanas.vue'
 import TelaDiario from './components/TelaDiario.vue'
 import TelaDuvidas from './components/TelaDuvidas.vue'
+import TelaAcompanhamento from './components/TelaAcompanhamento.vue'
 import NavBar from './components/NavBar.vue'
 
 const { state } = useGemelar()
@@ -34,6 +35,7 @@ const screens = {
   semanas: TelaSemanas,
   diario: TelaDiario,
   duvidas: TelaDuvidas,
+  saude: TelaAcompanhamento,
 }
 
 const currentComponent = computed(() => screens[state.currentScreen] || TelaSemanas)
@@ -42,7 +44,7 @@ const currentComponent = computed(() => screens[state.currentScreen] || TelaSema
 const transitionName = ref('fade-slide')
 const prevScreenIndex = ref(0)
 
-const screenOrder = ['semanas', 'diario', 'duvidas']
+const screenOrder = ['semanas', 'diario', 'saude', 'duvidas']
 
 watch(() => state.currentScreen, (newScreen, oldScreen) => {
   const newIdx = screenOrder.indexOf(newScreen)

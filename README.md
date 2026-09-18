@@ -1,4 +1,4 @@
-﻿# 👶👶 Gemelar
+# 👶👶 Gemelar
 
 > App para acompanhamento de gestação — gemelar ou única — feito com carinho para mães, pais e parceiros.
 
@@ -47,6 +47,11 @@ O **Gemelar** nasceu como o oposto do que existe no mercado: um app de gestaçã
 - Histórico de entradas com visualização expansível
 - Entradas coloridas por autor (roxo = mãe, azul = parceiro)
 
+### 🩺 Acompanhamento (Saúde)
+- **IMC Visual:** Cálculo silencioso do Índice de Massa Corporal através de uma barra em degradê (sem exposição de números frios), exibindo apenas a zona de peso adequado.
+- **Alerta de Fator Rh:** Checagem cruzada automática. Caso a mãe seja Rh Negativo e o parceiro Rh Positivo, o app sugere proativamente orientação médica sobre a imunoglobulina anti-D.
+- Registro contínuo de Peso, Altura e Tipos Sanguíneos.
+
 ### 🎮 Sistema de XP e Níveis
 - Ganhe XP ao completar o onboarding (+50 XP)
 - Ganhe XP ao escrever no diário (+15 XP)
@@ -82,6 +87,7 @@ gemelar/
 │   │   ├── TelaOnboarding.vue    # Onboarding personalizado
 │   │   ├── TelaSemanas.vue       # Tela principal — semana atual
 │   │   ├── TelaDiario.vue        # Diário / Nossa História
+│   │   ├── TelaAcompanhamento.vue# Saúde e indicadores (IMC, Rh)
 │   │   ├── TelaDuvidas.vue       # Perguntas frequentes
 │   │   ├── NavBar.vue            # Navegação inferior
 │   │   └── BotaoOuvir.vue        # Leitura em voz alta (TTS)

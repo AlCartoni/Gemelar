@@ -45,19 +45,10 @@
           </div>
         </div>
 
-        <div class="bebe-info">
-          <p class="bebe-tamanho">
-          {{ state.tipoGestacao === 'gemelar' ? 'Cada bebê está do tamanho de' : 'Seu bebê está do tamanho de' }}
-          <strong>{{ dados.tamanho }}</strong>
-        </p>
-          <div class="bebe-medidas">
-            <span class="medida">📏 {{ dados.comprimento }}</span>
-            <span class="medida">⚖️ {{ dados.peso }}</span>
-          </div>
+        <div class="bebe-info-fluida">
+          <p class="texto-evolucao" v-html="textoFluido"></p>
+          <p class="bebe-carinho">{{ dados.carinho }}</p>
         </div>
-
-        <p class="bebe-marco">{{ dados.marco }}</p>
-        <p class="bebe-carinho">{{ dados.carinho }}</p>
       </div>
     </Transition>
 
@@ -104,10 +95,16 @@
           <div class="progresso-preenchido" :style="{ width: progressoGestacao + '%' }"></div>
           <div class="progresso-marcadores">
             <span class="marcador" style="left: 0%">4</span>
-            <span class="marcador" v-if="state.tipoGestacao === 'gemelar'" style="left: 26.5%">13</span>
-            <span class="marcador" v-if="state.tipoGestacao === 'gemelar'" style="left: 67.6%">27</span>
-            <span class="marcador" v-if="state.tipoGestacao === 'gemelar'" style="left: 100%">38</span>
-            <span class="marcador" v-if="state.tipoGestacao === 'unica'" style="left: 100%">40</span>
+            <template v-if="state.tipoGestacao === 'gemelar'">
+              <span class="marcador" style="left: 26.5%">13</span>
+              <span class="marcador" style="left: 67.6%">27</span>
+              <span class="marcador" style="left: 100%">38</span>
+            </template>
+            <template v-else>
+              <span class="marcador" style="left: 25%">13</span>
+              <span class="marcador" style="left: 63.8%">27</span>
+              <span class="marcador" style="left: 100%">40</span>
+            </template>
           </div>
         </div>
         <div class="progresso-trimestres">
@@ -211,11 +208,33 @@ function proximaSemana() {
   if (semanaAtual.value < maxSemana.value) semanaAtual.value++
 }
 
+// Texto dinâmico fluído
+const textoFluido = computed(() => {
+  const d = dados.value;
+  const t = d.tamanho;
+  const c = d.comprimento;
+  const p = d.peso;
+  const m = d.marco;
+  const isG = isGemelar.value;
+  const s = semanaAtual.value;
+
+  const variacao = s % 3;
+
+  if (variacao === 0) {
+    return `Imagine <strong>${t}</strong>! É assim que ${isG ? 'seus bebês estão' : 'seu bebê está'} agora, medindo cerca de <strong>${c}</strong> e pesando <strong>${p}</strong>. A grande novidade desta semana é que: ${m}`;
+  } else if (variacao === 1) {
+    return `<strong>${m}</strong> Para tanta energia, o tamanho já chegou a <strong>${c}</strong> (pesando cerca de <strong>${p}</strong>). Se fôssemos comparar, seria como <strong>${t}</strong>.`;
+  } else {
+    return `${isG ? 'Eles já parecem' : 'Ele já parece'} <strong>${t}</strong>! Com <strong>${p}</strong> e <strong>${c}</strong>, o mais incrível é saber que: <strong>${m}</strong>`;
+  }
+})
+
 // Leitura
 const textoCompleto = computed(() => {
   const d = dados.value
   const nome = state.motherName ? `Olá, ${state.motherName}. ` : ''
-  return `${nome}${d.label || ''}. ${d.frase} ${d.marco} ${d.carinho}`
+  const textoLimpo = textoFluido.value.replace(/<\/?[^>]+(>|$)/g, "");
+  return `${nome}${d.label || ''}. ${textoLimpo} ${d.carinho}`
 })
 </script>
 
@@ -388,36 +407,21 @@ const textoCompleto = computed(() => {
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
-.bebe-info {
+.bebe-info-fluida {
+  margin-bottom: 12px;
+  padding: 0 10px;
+}
+
+.texto-evolucao {
+  font-size: 1.05rem;
+  color: var(--color-texto);
+  line-height: 1.5;
   margin-bottom: 12px;
 }
 
-.bebe-tamanho {
-  font-family: var(--font-titulo);
-  font-size: 1.1rem;
-  color: var(--color-texto);
-  margin: 0 0 8px 0;
-  line-height: 1.4;
-}
-
-.bebe-medidas {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-}
-
-.medida {
-  font-size: 0.9rem;
-  color: var(--color-texto-claro);
-  font-weight: 600;
-}
-
-.bebe-marco {
-  font-size: 1rem;
-  color: var(--color-texto);
-  font-weight: 600;
-  margin: 0 0 6px 0;
-  line-height: 1.4;
+.texto-evolucao :deep(strong) {
+  color: var(--color-roxo-escuro);
+  font-weight: 700;
 }
 
 .bebe-carinho {
