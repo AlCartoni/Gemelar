@@ -20,7 +20,7 @@
     <!-- Indicador de passos -->
     <div class="passos-indicador">
       <span
-        v-for="i in 4"
+        v-for="i in totalPassos"
         :key="i"
         class="passo-dot"
         :class="{ 'dot-ativo': i <= passo, 'dot-atual': i === passo }"
@@ -30,14 +30,49 @@
     <BotaoOuvir class="btn-ouvir-onb" :texto-para-ler="textoFala" />
 
     <Transition name="fade-slide" mode="out-in">
-      <!-- PASSO 1: NOME DA MÃE -->
+      <!-- PASSO 1: TIPO DE GESTAÇÃO -->
       <div v-if="passo === 1" key="passo1" class="passo passo-centralizado">
-        <div class="passo-emoji-grande">🤰</div>
+        <div class="passo-emoji-grande">✨</div>
+        <h1 class="passo-titulo">Como é a sua gestação?</h1>
+        <p class="passo-sub">Escolha para personalizarmos o app pra você.</p>
+
+        <div class="opcoes-grid">
+          <motion.button
+            class="opcao-card glass"
+            :class="{ 'opcao-card-ativa': tipoGestacaoTemp === 'gemelar' }"
+            @click="escolherTipoGestacao('gemelar')"
+            :whileTap="{ scale: 0.95 }"
+          >
+            <div class="opcao-emoji">👶👶</div>
+            <div class="opcao-textos">
+              <strong>Gêmeos</strong>
+              <small>Gestação de dois bebês.</small>
+            </div>
+          </motion.button>
+
+          <motion.button
+            class="opcao-card glass"
+            :class="{ 'opcao-card-ativa': tipoGestacaoTemp === 'unica' }"
+            @click="escolherTipoGestacao('unica')"
+            :whileTap="{ scale: 0.95 }"
+          >
+            <div class="opcao-emoji">👶</div>
+            <div class="opcao-textos">
+              <strong>Gestação única</strong>
+              <small>Gestação de um bebê.</small>
+            </div>
+          </motion.button>
+        </div>
+      </div>
+
+      <!-- PASSO 2: NOME DA MÃE -->
+      <div v-else-if="passo === 2" key="passo2" class="passo passo-centralizado">
+        <div class="passo-emoji-grande">🌸</div>
         <h1 class="passo-titulo">Como é seu nome?</h1>
         <p class="passo-sub">A gente quer te chamar pelo nome.</p>
 
         <div class="input-area glass">
-          <span class="input-icone">🌸</span>
+          <span class="input-icone">💕</span>
           <input
             v-model="nomeMaeTemp"
             class="nome-input"
@@ -59,8 +94,8 @@
         </motion.button>
       </div>
 
-      <!-- PASSO 2: TIPO DE GESTAÇÃO -->
-      <div v-else-if="passo === 2" key="passo2" class="passo passo-centralizado">
+      <!-- PASSO 3: TIPO DE GÊMEOS (só para gemelar) -->
+      <div v-else-if="passo === 3 && tipoGestacaoTemp === 'gemelar'" key="passo3g" class="passo passo-centralizado">
         <div class="passo-emoji-grande">👶👶</div>
         <h1 class="passo-titulo">Seus bebês são...</h1>
         <p class="passo-sub">Se não souber, sem problema!</p>
@@ -83,8 +118,8 @@
         </div>
       </div>
 
-      <!-- PASSO 3: SEMANA ATUAL -->
-      <div v-else-if="passo === 3" key="passo3" class="passo passo-centralizado">
+      <!-- PASSO 4: SEMANA ATUAL -->
+      <div v-else-if="passo === 4" key="passo4" class="passo passo-centralizado">
         <div class="passo-emoji-grande">📅</div>
         <h1 class="passo-titulo">Em que semana você está?</h1>
         <p class="passo-sub">Seu médico te falou a semana da gravidez.</p>
@@ -99,7 +134,7 @@
             type="range"
             v-model.number="semanaTemp"
             min="4"
-            max="38"
+            :max="tipoGestacaoTemp === 'unica' ? 40 : 38"
             step="1"
             class="semana-slider"
           />
@@ -107,7 +142,7 @@
           <div class="semana-range-labels">
             <span>4</span>
             <span>Semanas</span>
-            <span>38</span>
+            <span>{{ tipoGestacaoTemp === 'unica' ? 40 : 38 }}</span>
           </div>
         </div>
 
@@ -120,10 +155,10 @@
         </motion.button>
       </div>
 
-      <!-- PASSO 4: DPP -->
-      <div v-else-if="passo === 4" key="passo4" class="passo passo-centralizado">
+      <!-- PASSO 5: DPP + PARCEIRO OPCIONAL -->
+      <div v-else-if="passo === 5" key="passo5" class="passo passo-centralizado">
         <div class="passo-emoji-grande">🗓️</div>
-        <h1 class="passo-titulo">Quando os bebês devem nascer?</h1>
+        <h1 class="passo-titulo">Quando {{ tipoGestacaoTemp === 'gemelar' ? 'os bebês devem' : 'o bebê deve' }} nascer?</h1>
         <p class="passo-sub">A data que o médico falou. Se não souber, pode pular.</p>
 
         <div class="dpp-area">
@@ -140,6 +175,21 @@
           <div v-if="dppTemp" class="dpp-preview glass">
             <span class="dpp-emoji">⏳</span>
             <span class="dpp-texto">Faltam aproximadamente <strong>{{ diasRestantes }}</strong> dias!</span>
+          </div>
+        </div>
+
+        <!-- Parceiro opcional -->
+        <div class="parceiro-section">
+          <p class="parceiro-label">Quer adicionar o nome do parceiro(a)? <span class="opcional-tag">opcional</span></p>
+          <div class="input-area glass">
+            <span class="input-icone">💙</span>
+            <input
+              v-model="nomeParceiroTemp"
+              class="nome-input"
+              placeholder="Nome do parceiro(a)"
+              maxlength="20"
+              autocomplete="off"
+            />
           </div>
         </div>
 
@@ -175,7 +225,16 @@ const { state, addXp } = useGemelar()
 
 const passo = ref(1)
 
-// ── Passo 1: Nome ──
+// Passo 1: Tipo de gestação
+const tipoGestacaoTemp = ref(state.tipoGestacao || 'gemelar')
+function escolherTipoGestacao(tipo) {
+  tipoGestacaoTemp.value = tipo
+  state.tipoGestacao = tipo
+  // Se único, pular passo de tipo de gêmeos diretamente para semana
+  setTimeout(() => passo.value++, 400)
+}
+
+// Passo 2: Nome
 const nomeMaeTemp = ref(state.motherName || '')
 function avancarNome() {
   if (nomeMaeTemp.value.trim()) {
@@ -184,7 +243,7 @@ function avancarNome() {
   }
 }
 
-// ── Passo 2: Tipo de gestação ──
+// Passo 3: Tipo de gêmeos (só gemelar) ou pula para semana
 const tiposGestacao = [
   {
     id: 'identicos',
@@ -213,15 +272,16 @@ function escolherGestacao(id) {
   setTimeout(() => passo.value++, 400)
 }
 
-// ── Passo 3: Semana ──
+// Passo 4: Semana
 const semanaTemp = ref(state.currentWeek || 20)
 function avancarSemana() {
   state.currentWeek = semanaTemp.value
   passo.value++
 }
 
-// ── Passo 4: DPP ──
+// Passo 5: DPP
 const dppTemp = ref(state.dpp || '')
+const nomeParceiroTemp = ref(state.partnerName || '')
 const dppMinDate = computed(() => {
   const hoje = new Date()
   return hoje.toISOString().split('T')[0]
@@ -238,9 +298,29 @@ function concluirOnboarding() {
   if (dppTemp.value) {
     state.dpp = dppTemp.value
   }
+  if (nomeParceiroTemp.value.trim()) {
+    state.partnerName = nomeParceiroTemp.value.trim()
+  }
   state.onboardingCompleted = true
   state.currentScreen = 'semanas'
   addXp(50) // XP por completar o onboarding
+}
+
+// Total de passos: gemelar tem 5 (tipo gestação, nome, tipo gêmeos, semana, dpp)
+// único tem 4 (tipo gestação, nome, semana, dpp) — mas internamente usamos 5 passos
+// e pulamos o passo 3 para única automaticamente no avancar do passo 2
+const totalPassos = computed(() => tipoGestacaoTemp.value === 'gemelar' ? 5 : 4)
+
+// Quando avança do passo 2 (nome) em gestação única, pula o passo 3 (tipo gêmeos)
+function avancarNomeComPulo() {
+  if (nomeMaeTemp.value.trim()) {
+    state.motherName = nomeMaeTemp.value.trim()
+    if (tipoGestacaoTemp.value === 'unica') {
+      passo.value = 4 // pula direto para semana
+    } else {
+      passo.value = 3
+    }
+  }
 }
 
 // ── Visual ──
@@ -265,10 +345,11 @@ function particulaStyle(i) {
 }
 
 const textoFala = computed(() => {
-  if (passo.value === 1) return 'Como é seu nome? Digite seu nome para a gente te conhecer.'
-  if (passo.value === 2) return 'Seus bebês são gêmeos idênticos, fraternos, ou você ainda não sabe?'
-  if (passo.value === 3) return 'Em que semana da gravidez você está? Use o controle para escolher.'
-  if (passo.value === 4) return 'Quando os bebês devem nascer? Coloque a data que o médico falou.'
+  if (passo.value === 1) return 'Como é a sua gestação? Gêmeos ou gestação única?'
+  if (passo.value === 2) return 'Como é seu nome? Digite seu nome para a gente te conhecer.'
+  if (passo.value === 3) return 'Seus bebês são gêmeos idênticos, fraternos, ou você ainda não sabe?'
+  if (passo.value === 4) return 'Em que semana da gravidez você está? Use o controle para escolher.'
+  if (passo.value === 5) return 'Quando o bebê deve nascer? Coloque a data que o médico falou.'
   return ''
 })
 </script>
@@ -553,5 +634,27 @@ const textoFala = computed(() => {
   font-weight: 600;
   text-decoration: underline;
   text-underline-offset: 3px;
+}
+
+/* ── Parceiro opcional ── */
+.parceiro-section {
+  margin-bottom: 24px;
+}
+.parceiro-label {
+  font-size: 0.9rem;
+  color: var(--color-texto-claro);
+  margin-bottom: 10px;
+  text-align: center;
+}
+.opcional-tag {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-azul);
+  background: var(--color-azul-claro);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  margin-left: 4px;
+  vertical-align: middle;
 }
 </style>

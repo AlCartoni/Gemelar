@@ -1,4 +1,9 @@
 node_modules/
 dist/
 .env
+.env.capacitor
 .DS_Store
+
+# Capacitor — projeto nativo Android (regenerável)
+# Descomente a linha abaixo se quiser versionar o projeto Android:
+android/

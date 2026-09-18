@@ -545,3 +545,524 @@ export function getConquista(semana) {
 }
 
 export { semanas }
+
+// ─────────────────────────────────────────────
+// GESTAÇÃO ÚNICA — Dataset completo (semanas 4-40)
+// ─────────────────────────────────────────────
+
+const semanasUnica = {
+  4: {
+    emoji: '🌱',
+    tamanho: 'uma sementinha de papoula',
+    peso: '< 1g',
+    comprimento: '~1 mm',
+    marco: 'Seu bebê está dando seus primeiros passos de formação.',
+    frase: 'Tudo começa bem pequeninho. E já é lindo.',
+    carinho: 'Você já é mãe. 💛',
+    cuidados: [
+      { icone: '💊', texto: 'Tome o ácido fólico todo dia. Ele protege muito.' },
+      { icone: '💧', texto: 'Beba bastante água. Seu corpo precisa.' },
+    ],
+  },
+  5: {
+    emoji: '🌾',
+    tamanho: 'um grãozinho de gergelim',
+    peso: '< 1g',
+    comprimento: '~2 mm',
+    marco: 'O coraçãozinho está começando a bater.',
+    frase: 'Um coraçãozinho começando a bater dentro de você.',
+    carinho: 'Já é um amor imenso. ✨',
+    cuidados: [
+      { icone: '🤰', texto: 'Se sentir enjoo, coma pouco e várias vezes ao dia.' },
+      { icone: '😴', texto: 'Descanse sempre que puder. Seu corpo está trabalhando muito.' },
+    ],
+  },
+  6: {
+    emoji: '🫘',
+    tamanho: 'uma lentilha',
+    peso: '< 1g',
+    comprimento: '~5 mm',
+    marco: 'Os bracinhos e perninhas estão começando a aparecer.',
+    frase: 'Pequenininho, mas já cheio de vida.',
+    carinho: 'Pequenino, mas já cheio de vida. 💕',
+    cuidados: [
+      { icone: '🥤', texto: 'Gengibre ou limão na água ajuda com enjoo.' },
+      { icone: '📋', texto: 'Já marcou a primeira consulta? O médico vai cuidar de vocês.' },
+    ],
+  },
+  7: {
+    emoji: '🫐',
+    tamanho: 'uma amora',
+    peso: '~1g',
+    comprimento: '~1 cm',
+    marco: 'O cérebro está crescendo rápido.',
+    frase: 'Do tamanho de uma amora, mas crescendo a todo vapor.',
+    carinho: 'Doce como você. 🥰',
+    cuidados: [
+      { icone: '🥗', texto: 'Coma frutas e verduras. O que faz bem pra você faz bem pra ele.' },
+      { icone: '💤', texto: 'Muito sono é normal. Seu corpo está trabalhando muito!' },
+    ],
+  },
+  8: {
+    emoji: '🫒',
+    tamanho: 'uma azeitona',
+    peso: '~1g',
+    comprimento: '~1.5 cm',
+    marco: 'O coraçãozinho já bate com força!',
+    frase: 'O batimento cardíaco já está firme.',
+    carinho: 'Esse coraçãozinho já é seu maior amor. 💓',
+    cuidados: [
+      { icone: '❌', texto: 'Evite álcool, cigarro e medicamentos sem receita.' },
+      { icone: '🏥', texto: 'A ultrassom desta fase é muito especial!' },
+    ],
+  },
+  9: {
+    emoji: '🍇',
+    tamanho: 'uma uva',
+    peso: '~2g',
+    comprimento: '~2.3 cm',
+    marco: 'Os dedinhos estão se formando.',
+    frase: 'Já tem dedinhos! Um por um se formando.',
+    carinho: 'Cada dedinho, uma promessa de abraço. 🤍',
+    cuidados: [
+      { icone: '🧘', texto: 'Respire fundo. Yoga leve ou caminhada fazem bem.' },
+      { icone: '😣', texto: 'Enjoo chato? Biscoitinhos de manhã antes de levantar ajudam.' },
+    ],
+  },
+  10: {
+    emoji: '🍓',
+    tamanho: 'um morango',
+    peso: '~4g',
+    comprimento: '~3.1 cm',
+    marco: 'Já é oficialmente um feto! As formas humanas estão definidas.',
+    frase: 'Do tamanho de um morango e crescendo.',
+    carinho: 'Pequenininho e já tão perfeito. ✨',
+    cuidados: [
+      { icone: '🦷', texto: 'Cuide dos seus dentes. A gestação afeta as gengivas.' },
+      { icone: '📖', texto: 'Aproveite pra ler sobre a gestação. Conhecimento tranquiliza.' },
+    ],
+  },
+  11: {
+    emoji: '🥝',
+    tamanho: 'um kiwi',
+    peso: '~7g',
+    comprimento: '~4.1 cm',
+    marco: 'Ele já consegue fazer expressões faciais.',
+    frase: 'Já faz caretinhas lá dentro!',
+    carinho: 'Mal posso esperar ver esse sorriso. 🥰',
+    cuidados: [
+      { icone: '🥛', texto: 'Aposte no cálcio: leite, iogurte, queijo.' },
+      { icone: '🌿', texto: 'Exercício leve com liberação médica faz muito bem.' },
+    ],
+  },
+  12: {
+    emoji: '🍋',
+    tamanho: 'um limão',
+    peso: '~14g',
+    comprimento: '~5.4 cm',
+    marco: 'O primeiro trimestre está quase completo! Risco de perda diminui muito.',
+    frase: 'Uma fase importante chegando ao fim. Você foi incrível.',
+    carinho: 'Três meses de amor e coragem. 🏅',
+    cuidados: [
+      { icone: '😮‍💨', texto: 'Enjoo tende a diminuir agora. Respira!' },
+      { icone: '📸', texto: 'Foto da barriga? Vai ser lindo olhar depois!' },
+    ],
+  },
+  13: {
+    emoji: '🍑',
+    tamanho: 'um pêssego',
+    peso: '~23g',
+    comprimento: '~7.4 cm',
+    marco: 'Os rins já funcionam e ele já engole líquido amniótico.',
+    frase: 'Seu bebê já treina engolir. Fofíssimo!',
+    carinho: 'Doce como um pêssego, igual a você. 🍑',
+    cuidados: [
+      { icone: '☀️', texto: 'Se puder, tome um pouco de sol pela manhã. Vitamina D.' },
+      { icone: '💬', texto: 'Converse com ele! Sua voz já é reconhecida.' },
+    ],
+  },
+  14: {
+    emoji: '🥭',
+    tamanho: 'uma manga pequena',
+    peso: '~43g',
+    comprimento: '~8.7 cm',
+    marco: 'O sexo pode ser identificado no ultrassom!',
+    frase: 'Começa o segundo trimestre — a fase mais confortável para a maioria.',
+    carinho: 'Você está arrasando. 💪',
+    cuidados: [
+      { icone: '🛏️', texto: 'Comece a dormir de lado (de preferência esquerdo).' },
+      { icone: '🧴', texto: 'Hidrate a pele da barriga para prevenir estrias.' },
+    ],
+  },
+  15: {
+    emoji: '🍎',
+    tamanho: 'uma maçã',
+    peso: '~70g',
+    comprimento: '~10.1 cm',
+    marco: 'Ele já se mexe! Pode não sentir ainda, mas está dançando lá dentro.',
+    frase: 'Prepare-se para sentir os primeiros chutinhos em breve.',
+    carinho: 'Cada mexidinho será uma festa. 🎉',
+    cuidados: [
+      { icone: '🍗', texto: 'Proteínas são importantes agora. Frango, peixe, ovo, feijão.' },
+      { icone: '💆', texto: 'Massagem leve nas costas alivia as dores.' },
+    ],
+  },
+  16: {
+    emoji: '🥑',
+    tamanho: 'um abacate',
+    peso: '~100g',
+    comprimento: '~11.6 cm',
+    marco: 'Os olhinhos podem detectar luz agora.',
+    frase: 'Já percebe a luz que atravessa sua barriga.',
+    carinho: 'Já está de olho em você. 👀',
+    cuidados: [
+      { icone: '🧘', texto: 'Meditação e respiração profunda reduzem a ansiedade.' },
+      { icone: '🥗', texto: 'Ferro é essencial: carne, feijão, espinafre.' },
+    ],
+  },
+  17: {
+    emoji: '🍐',
+    tamanho: 'uma pera',
+    peso: '~140g',
+    comprimento: '~13 cm',
+    marco: 'A gordura está se formando para proteger e aquecer.',
+    frase: 'Ganhando camadas de proteção e calor.',
+    carinho: 'Cada grãozinho de gordura é saúde. 💛',
+    cuidados: [
+      { icone: '🏊', texto: 'Hidroterapia ou caminhada na água é ótimo nessa fase.' },
+      { icone: '📒', texto: 'Escreva no diário. Esses momentos são únicos.' },
+    ],
+  },
+  18: {
+    emoji: '🍠',
+    tamanho: 'uma batata-doce',
+    peso: '~190g',
+    comprimento: '~14.2 cm',
+    marco: 'Ele já ouve a sua voz com clareza!',
+    frase: 'Sua voz é a música favorita dele.',
+    carinho: 'Fale com ele. Ele ouve. 🎵',
+    cuidados: [
+      { icone: '🎵', texto: 'Música clássica ou suave relaxa o bebê e você.' },
+      { icone: '🤸', texto: 'Alongamento leve ajuda nas dores do ligamento.' },
+    ],
+  },
+  19: {
+    emoji: '🥦',
+    tamanho: 'um brócolis',
+    peso: '~240g',
+    comprimento: '~15.3 cm',
+    marco: 'Os sentidos (olfato, paladar, visão, tato) estão se desenvolvendo.',
+    frase: 'Um bebê que já sente o mundo lá dentro.',
+    carinho: 'Que maravilha de criatura. 🌟',
+    cuidados: [
+      { icone: '🍋', texto: 'Coma frutas cítricas. Vitamina C ajuda o sistema imune.' },
+      { icone: '💤', texto: 'Travesseiro entre as pernas ajuda a dormir melhor.' },
+    ],
+  },
+  20: {
+    emoji: '🌽',
+    tamanho: 'uma espiga de milho',
+    peso: '~300g',
+    comprimento: '~16.4 cm',
+    marco: 'Metade da gestação! Ultrassom morfológico revela muita coisa.',
+    frase: 'Você está na metade da jornada. Que conquista!',
+    carinho: 'Metade do caminho, o coração já completo. ⭐',
+    cuidados: [
+      { icone: '🏥', texto: 'Ultrassom morfológico — não perca!' },
+      { icone: '📸', texto: 'Tire uma foto especial da barriga. Metade da jornada!' },
+    ],
+  },
+  21: {
+    emoji: '🥕',
+    tamanho: 'uma cenoura',
+    peso: '~360g',
+    comprimento: '~26.7 cm',
+    marco: 'Ele soluça! Você pode sentir pequenos pulos ritmados.',
+    frase: 'Esses soluçozinhos são uma das coisas mais fofas.',
+    carinho: 'Até o soluço dele é adorável. 🫶',
+    cuidados: [
+      { icone: '🛌', texto: 'Evite deitar de costas por muito tempo. Lado esquerdo é melhor.' },
+      { icone: '🌿', texto: 'Caminhada leve 30 minutos por dia faz muito bem.' },
+    ],
+  },
+  22: {
+    emoji: '🥥',
+    tamanho: 'um coco pequeno',
+    peso: '~430g',
+    comprimento: '~27.8 cm',
+    marco: 'Os lábios e olhos já estão bem formados.',
+    frase: 'Já tem os tracinhos do rostinho definidos.',
+    carinho: 'Mal posso esperar ver esse rostinho. 💕',
+    cuidados: [
+      { icone: '💪', texto: 'Exercícios para o assoalho pélvico são muito importantes.' },
+      { icone: '🧴', texto: 'Continue hidratando a barriga. Ela cresce bastante agora.' },
+    ],
+  },
+  23: {
+    emoji: '🌶️',
+    tamanho: 'uma pimenta comprida',
+    peso: '~501g',
+    comprimento: '~28.9 cm',
+    marco: 'Os pulmões estão se preparando para respirar!',
+    frase: 'Praticando o primeiro respiro.',
+    carinho: 'Cada respiração sua é a dele também. 🌬️',
+    cuidados: [
+      { icone: '🥩', texto: 'Ferro agora é essencial. Carnes, feijão, folhas escuras.' },
+      { icone: '😌', texto: 'Descanse bastante. A barriga está crescendo rápido.' },
+    ],
+  },
+  24: {
+    emoji: '🌽',
+    tamanho: 'uma espiga cheia',
+    peso: '~600g',
+    comprimento: '~30 cm',
+    marco: 'Os olhinhos já se abrem! Ele pisca lá dentro.',
+    frase: 'Abrindo os olhinhos para o mundo.',
+    carinho: 'Os primeiros olhares já são pra você. 👀',
+    cuidados: [
+      { icone: '🏥', texto: 'Exame de glicose? Seu médico vai solicitar em breve.' },
+      { icone: '💬', texto: 'Conte histórias pra ele. A voz já reconhece.' },
+    ],
+  },
+  25: {
+    emoji: '🥬',
+    tamanho: 'uma alface',
+    peso: '~660g',
+    comprimento: '~34.6 cm',
+    marco: 'O sistema nervoso está amadurecendo rapidamente.',
+    frase: 'Conectando neurônios a cada segundo.',
+    carinho: 'Um pequeno gênio chegando. 🧠',
+    cuidados: [
+      { icone: '🎵', texto: 'Falar e cantar estimula o desenvolvimento dele.' },
+      { icone: '💆', texto: 'Massagem nas pernas ajuda com inchaço.' },
+    ],
+  },
+  26: {
+    emoji: '🥒',
+    tamanho: 'um pepino inglês',
+    peso: '~760g',
+    comprimento: '~35.6 cm',
+    marco: 'Ele abre e fecha as mãos e sente texturas!',
+    frase: 'Já explora o espaço com as mãozinhas.',
+    carinho: 'Essas mãozinhas vão segurar a sua. Em breve. 🤝',
+    cuidados: [
+      { icone: '💧', texto: 'Beba mais água. O volume sanguíneo aumentou muito.' },
+      { icone: '🏥', texto: 'Fale com seu médico sobre os movimentos. Contá-los tranquiliza.' },
+    ],
+  },
+  27: {
+    emoji: '🥜',
+    tamanho: 'um ramo de couve-flor',
+    peso: '~875g',
+    comprimento: '~36.6 cm',
+    marco: 'Os pulmões já produzem surfactante — preparando para respirar.',
+    frase: 'Quase pronto para o ar do mundo.',
+    carinho: 'Você está chegando na reta final. 🌟',
+    cuidados: [
+      { icone: '🛌', texto: 'Desconforto pra dormir é normal. Experimente posições diferentes.' },
+      { icone: '🎒', texto: 'Hora de começar a pensar na mala da maternidade.' },
+    ],
+  },
+  28: {
+    emoji: '🍆',
+    tamanho: 'uma berinjela',
+    peso: '~1 kg',
+    comprimento: '~37.6 cm',
+    marco: 'Terceiro trimestre! O bebê já reconhece vozes familiares.',
+    frase: 'Começa a reta final. Você chegou longe!',
+    carinho: 'A reta final começou. Você é incrível. 🏆',
+    cuidados: [
+      { icone: '🏥', texto: 'Visitas ao médico ficam mais frequentes agora. É normal.' },
+      { icone: '😮‍💨', texto: 'Falta de ar pode aparecer. Sente-se ereta e respire devagar.' },
+    ],
+  },
+  29: {
+    emoji: '🎃',
+    tamanho: 'uma abóbora pequena',
+    peso: '~1.15 kg',
+    comprimento: '~38.6 cm',
+    marco: 'O cérebro cresce mais rápido do que nunca.',
+    frase: 'Um cérebro se formando a toda velocidade.',
+    carinho: 'Todo esse esforço vai valer muito. 💛',
+    cuidados: [
+      { icone: '🥛', texto: 'Cálcio é essencial. Ossos e dentes do bebê estão se formando.' },
+      { icone: '🧘', texto: 'Respiração profunda prepara para o parto.' },
+    ],
+  },
+  30: {
+    emoji: '🥬',
+    tamanho: 'um repolho',
+    peso: '~1.3 kg',
+    comprimento: '~39.9 cm',
+    marco: 'Ele pode mamar e piscar independentemente.',
+    frase: 'Praticando movimentos que vai usar fora.',
+    carinho: 'Já sabe mamar. Esperando por você. 🤱',
+    cuidados: [
+      { icone: '🎒', texto: 'Prepare a mala da maternidade com calma.' },
+      { icone: '📞', texto: 'Combine com quem vai te acompanhar no parto.' },
+    ],
+  },
+  31: {
+    emoji: '🥥',
+    tamanho: 'um coco grande',
+    peso: '~1.5 kg',
+    comprimento: '~41.1 cm',
+    marco: 'Os pulmões estão quase prontos. Gordura continua acumulando.',
+    frase: 'Ganhando peso e se preparando para o mundo.',
+    carinho: 'Cada graminho é saúde e vida. 💪',
+    cuidados: [
+      { icone: '💤', texto: 'Descanse muito. Seu corpo está trabalhando dobrado.' },
+      { icone: '🌬️', texto: 'Aprenda técnicas de respiração para o parto.' },
+    ],
+  },
+  32: {
+    emoji: '🎂',
+    tamanho: 'uma caixa de sapato pequena',
+    peso: '~1.7 kg',
+    comprimento: '~42.4 cm',
+    marco: 'A posição de cabeça para baixo costuma começar agora.',
+    frase: 'Ele já se posiciona para chegada.',
+    carinho: 'Falta pouquinho pra te conhecer! 🎉',
+    cuidados: [
+      { icone: '🏥', texto: 'Conheça os sinais de trabalho de parto com seu médico.' },
+      { icone: '📋', texto: 'Escreva seu plano de parto se quiser ter um.' },
+    ],
+  },
+  33: {
+    emoji: '🍍',
+    tamanho: 'um abacaxi',
+    peso: '~1.9 kg',
+    comprimento: '~43.7 cm',
+    marco: 'Ele detecta luz e escuridão. O ritmo dia/noite começa.',
+    frase: 'Conhecendo o ritmo do seu dia.',
+    carinho: 'Já sincronizando com a sua rotina. 🌙',
+    cuidados: [
+      { icone: '🧳', texto: 'Mala da maternidade pronta? Revise o que levará.' },
+      { icone: '💬', texto: 'Converse com pessoas que já passaram pelo parto. Ajuda.' },
+    ],
+  },
+  34: {
+    emoji: '🎈',
+    tamanho: 'um melão pequeno',
+    peso: '~2.15 kg',
+    comprimento: '~45 cm',
+    marco: 'Os rins funcionam perfeitamente. O bebê urina lá dentro.',
+    frase: 'Tudo funcionando direitinho.',
+    carinho: 'Um bebê completo se preparando. 💫',
+    cuidados: [
+      { icone: '🥗', texto: 'Refeições menores e mais frequentes. A barriga aperta o estômago.' },
+      { icone: '🏥', texto: 'Acompanhe os movimentos diários. Informe alterações ao médico.' },
+    ],
+  },
+  35: {
+    emoji: '🧅',
+    tamanho: 'uma cebola grande',
+    peso: '~2.4 kg',
+    comprimento: '~46.2 cm',
+    marco: 'Os rins e fígado estão totalmente desenvolvidos.',
+    frase: 'Orgãos completos. Só falta o tempo certo.',
+    carinho: 'Quase perfeito. Mais alguns dias. 🌈',
+    cuidados: [
+      { icone: '😴', texto: 'Dificuldade pra dormir é normal. Posições diferentes ajudam.' },
+      { icone: '💪', texto: 'Seus exercícios pré-parto valem a pena agora.' },
+    ],
+  },
+  36: {
+    emoji: '🥗',
+    tamanho: 'uma alface grande',
+    peso: '~2.6 kg',
+    comprimento: '~47.4 cm',
+    marco: 'Bebê considerado "pré-termo tardio". Pode nascer a qualquer momento!',
+    frase: 'Pronto para o mundo. Esperando a hora certa.',
+    carinho: 'Ele pode nascer a qualquer momento! 🌈',
+    cuidados: [
+      { icone: '🏥', texto: 'Fique atenta aos sinais: contrações, rompimento da bolsa.' },
+      { icone: '📱', texto: 'Deixe celular carregado e hospital anotado.' },
+    ],
+  },
+  37: {
+    emoji: '🌿',
+    tamanho: 'uma acelga',
+    peso: '~2.85 kg',
+    comprimento: '~48.6 cm',
+    marco: 'Bebê a termo precoce! Totalmente preparado para o mundo.',
+    frase: 'Pronto, completo, esperando por você.',
+    carinho: 'O grande abraço está chegando. 🤗',
+    cuidados: [
+      { icone: '🧳', texto: 'Mala pronta, hospital escolhido, rota definida.' },
+      { icone: '🫶', texto: 'Relaxe. Você fez tudo certo. Confie no seu corpo.' },
+    ],
+  },
+  38: {
+    emoji: '🍈',
+    tamanho: 'um melão médio',
+    peso: '~3 kg',
+    comprimento: '~49.8 cm',
+    marco: 'Bebê totalmente desenvolvido! O parto pode acontecer a qualquer momento.',
+    frase: 'Completo, pronto e cheio de amor.',
+    carinho: 'Você vai se conhecer muito em breve. 💕',
+    cuidados: [
+      { icone: '🏥', texto: 'Vá ao hospital se tiver contrações regulares ou bolsa rompida.' },
+      { icone: '💆', texto: 'Respire. Seu corpo sabe o que fazer.' },
+    ],
+  },
+  39: {
+    emoji: '🍉',
+    tamanho: 'uma melancia pequena',
+    peso: '~3.3 kg',
+    comprimento: '~50.7 cm',
+    marco: 'As unhas podem já passar das pontas dos dedos!',
+    frase: 'Cheio, completo e esperando o sinal.',
+    carinho: 'Cada dia é um presente. 🎁',
+    cuidados: [
+      { icone: '🚗', texto: 'Instale a cadeirinha do carro. Logo vai precisar!' },
+      { icone: '🧘', texto: 'Meditação e respiração te ajudam a aguardar com paz.' },
+    ],
+  },
+  40: {
+    emoji: '🎀',
+    tamanho: 'uma abóbora grande',
+    peso: '~3.4 kg',
+    comprimento: '~51.2 cm',
+    marco: 'Data prevista! Muitos bebês chegam antes ou depois. Tudo bem.',
+    frase: 'A data chegou. A vida está prestes a mudar para sempre.',
+    carinho: 'O encontro mais esperado está chegando. 💕',
+    cuidados: [
+      { icone: '🏥', texto: 'Se passou da data, seu médico vai orientar os próximos passos.' },
+      { icone: '💪', texto: 'Você fez uma coisa incrível. Confie em você.' },
+    ],
+  },
+}
+
+/**
+ * useSemanaDataUnica — Composable para gestação normal (única)
+ */
+export function useSemanaDataUnica(semanaRef) {
+  const maxSemana = 40
+  const dados = computed(() => {
+    const s = Math.min(Math.max(semanaRef.value, 4), maxSemana)
+    return semanasUnica[s] || semanasUnica[40]
+  })
+  return { dados }
+}
+
+/**
+ * Conquistas para gestação única
+ */
+export function getConquistaUnica(semana) {
+  const conquistas = {
+    8:  { titulo: 'Primeiro Batimento', emoji: '💓', descricao: 'O coração do bebê já bate!' },
+    12: { titulo: 'Primeiro Trimestre', emoji: '🏅', descricao: 'Você completou 1/3 da jornada!' },
+    16: { titulo: 'Crescendo', emoji: '🌱', descricao: 'Seu bebê dobrou de tamanho!' },
+    18: { titulo: 'Primeiros Sons', emoji: '🎵', descricao: 'Ele já ouve sua voz!' },
+    20: { titulo: 'Metade do Caminho', emoji: '⭐', descricao: 'Você chegou na metade! Incrível!' },
+    24: { titulo: 'Olhinhos Abertos', emoji: '👀', descricao: 'Ele já abre os olhinhos!' },
+    28: { titulo: 'Terceiro Trimestre', emoji: '🏆', descricao: 'A reta final começou!' },
+    32: { titulo: 'Quase Lá', emoji: '🎉', descricao: 'Falta pouquinho pra conhecer ele!' },
+    36: { titulo: 'Pronto!', emoji: '🌈', descricao: 'Ele pode nascer a qualquer momento!' },
+    40: { titulo: 'O Grande Dia', emoji: '💕', descricao: 'Seu bebê está pronto pra te conhecer!' },
+  }
+  return conquistas[semana] || null
+}
+
+export { semanasUnica }

@@ -26,20 +26,21 @@
         rows="5"
       ></textarea>
       <div class="escrita-acoes">
-        <div class="autor-selector">
+        <!-- Seletor de autor: só aparece se parceiro cadastrado -->
+        <div v-if="state.partnerName" class="autor-selector">
           <button
             class="autor-btn"
             :class="{ ativo: autorAtual === 'mae' }"
             @click="autorAtual = 'mae'"
           >
-            🌸 Mamãe
+            🌸 {{ state.motherName || 'Mamãe' }}
           </button>
           <button
             class="autor-btn"
             :class="{ ativo: autorAtual === 'parceiro' }"
             @click="autorAtual = 'parceiro'"
           >
-            💙 Parceiro(a)
+            💙 {{ state.partnerName }}
           </button>
         </div>
         <motion.button
@@ -112,29 +113,34 @@ const mostrarFeedback = ref(false)
 const autorAtual = ref('mae')
 const mostrarTodas = ref(false)
 
-const frases = [
+const frases = computed(() => [
   { texto: 'O que você está sentindo hoje?', emoji: '🌸' },
-  { texto: 'Seus bebês adoram ouvir sua voz.', emoji: '💕' },
+  {
+    texto: state.tipoGestacao === 'gemelar'
+      ? 'Seus bebês adoram ouvir sua voz.'
+      : 'Seu bebê adora ouvir sua voz.',
+    emoji: '💕'
+  },
   { texto: 'Você é incrível. Pode escrever qualquer coisa.', emoji: '✨' },
   { texto: 'Que tal contar um sonho que teve?', emoji: '🌙' },
   { texto: 'Aqui é seu cantinho. Sem pressa.', emoji: '🫶' },
-]
+])
 
-const placeholders = [
+const placeholders = computed(() => [
   'Escreva o que quiser...',
   'Hoje eu senti...',
   'Uma coisa boa de hoje...',
   'Quero lembrar que...',
-]
+])
 
 const fraseAtual = computed(() => {
-  const idx = new Date().getDate() % frases.length
-  return frases[idx]
+  const idx = new Date().getDate() % frases.value.length
+  return frases.value[idx]
 })
 
 const placeholderAtual = computed(() => {
-  const idx = new Date().getHours() % placeholders.length
-  return placeholders[idx]
+  const idx = new Date().getHours() % placeholders.value.length
+  return placeholders.value[idx]
 })
 
 const entradasVisiveis = computed(() => {

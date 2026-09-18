@@ -38,7 +38,9 @@ const state = reactive({
   // Onboarding
   onboardingCompleted: saved?.onboardingCompleted || false,
   motherName: saved?.motherName || '',
-  gestationType: saved?.gestationType || null, // 'identicos', 'fraternos', 'nao-sei'
+  partnerName: saved?.partnerName || '', // Opcional — pode ser vazio
+  tipoGestacao: saved?.tipoGestacao || 'gemelar', // 'gemelar' | 'unica'
+  gestationType: saved?.gestationType || null, // 'identicos', 'fraternos', 'nao-sei' (só gemelar)
   currentWeek: saved?.currentWeek || 20,
   dpp: saved?.dpp || null, // ISO date string
 
@@ -65,6 +67,8 @@ watch(
       currentScreen: state.currentScreen,
       onboardingCompleted: state.onboardingCompleted,
       motherName: state.motherName,
+      partnerName: state.partnerName,
+      tipoGestacao: state.tipoGestacao,
       gestationType: state.gestationType,
       currentWeek: state.currentWeek,
       dpp: state.dpp,
@@ -149,10 +153,11 @@ export function useGemelar() {
 
   const tituloNivel = computed(() => {
     const titulos = [
-      'Sementinha', 'Brotinho', 'Florzinha', 'Estrelinha', 'Solzinho',
-      'Arco-Íris', 'Borboleta', 'Lua Cheia', 'Supermãe', 'Lendária'
+      'Família Nascendo', 'Primeiro Batimento', 'Começo de Tudo',
+      'Cheia de Vida', 'Metade da Jornada', 'Quase Lá',
+      'Reta Final', 'Família Completa', 'Família Radiante', 'Família Lendária'
     ]
-    return titulos[nivel.value - 1] || 'Sementinha'
+    return titulos[nivel.value - 1] || 'Família Nascendo'
   })
 
   // ── Cuidados ──
@@ -180,8 +185,9 @@ export function useGemelar() {
   })
 
   const progressoGestacao = computed(() => {
-    // Progresso de 4 a 38 semanas
-    return Math.min(100, ((state.currentWeek - 4) / (38 - 4)) * 100)
+    // Progresso de 4 a 38 semanas (gemelar) ou 4 a 40 (única)
+    const maxSemana = state.tipoGestacao === 'unica' ? 40 : 38
+    return Math.min(100, ((state.currentWeek - 4) / (maxSemana - 4)) * 100)
   })
 
   // ── Reset ──

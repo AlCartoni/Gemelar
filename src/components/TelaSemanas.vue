@@ -46,7 +46,10 @@
         </div>
 
         <div class="bebe-info">
-          <p class="bebe-tamanho">Cada bebê está do tamanho de <strong>{{ dados.tamanho }}</strong></p>
+          <p class="bebe-tamanho">
+          {{ state.tipoGestacao === 'gemelar' ? 'Cada bebê está do tamanho de' : 'Seu bebê está do tamanho de' }}
+          <strong>{{ dados.tamanho }}</strong>
+        </p>
           <div class="bebe-medidas">
             <span class="medida">📏 {{ dados.comprimento }}</span>
             <span class="medida">⚖️ {{ dados.peso }}</span>
@@ -91,27 +94,28 @@
       </div>
     </div>
 
-    <!-- Barra de progresso da gestação -->
-    <div class="progresso-gestacao">
-      <div class="progresso-header">
-        <span class="progresso-label">Progresso da gestação</span>
-        <span v-if="diasParaDPP !== null" class="progresso-dpp">{{ diasParaDPP }} dias para o DPP</span>
-      </div>
-      <div class="progresso-barra">
-        <div class="progresso-preenchido" :style="{ width: progressoGestacao + '%' }"></div>
-        <div class="progresso-marcadores">
-          <span class="marcador" style="left: 0%">4</span>
-          <span class="marcador" style="left: 26.5%">13</span>
-          <span class="marcador" style="left: 67.6%">27</span>
-          <span class="marcador" style="left: 100%">38</span>
+      <!-- Barra de progresso da gestação -->
+      <div class="progresso-gestacao">
+        <div class="progresso-header">
+          <span class="progresso-label">Progresso da gestação</span>
+          <span v-if="diasParaDPP !== null" class="progresso-dpp">{{ diasParaDPP }} dias para o parto</span>
+        </div>
+        <div class="progresso-barra">
+          <div class="progresso-preenchido" :style="{ width: progressoGestacao + '%' }"></div>
+          <div class="progresso-marcadores">
+            <span class="marcador" style="left: 0%">4</span>
+            <span class="marcador" v-if="state.tipoGestacao === 'gemelar'" style="left: 26.5%">13</span>
+            <span class="marcador" v-if="state.tipoGestacao === 'gemelar'" style="left: 67.6%">27</span>
+            <span class="marcador" v-if="state.tipoGestacao === 'gemelar'" style="left: 100%">38</span>
+            <span class="marcador" v-if="state.tipoGestacao === 'unica'" style="left: 100%">40</span>
+          </div>
+        </div>
+        <div class="progresso-trimestres">
+          <span class="tri-label">1º tri</span>
+          <span class="tri-label">2º tri</span>
+          <span class="tri-label">3º tri</span>
         </div>
       </div>
-      <div class="progresso-trimestres">
-        <span class="tri-label">1º tri</span>
-        <span class="tri-label">2º tri</span>
-        <span class="tri-label">3º tri</span>
-      </div>
-    </div>
 
     <!-- Navegação entre semanas -->
     <div class="nav-semanas">
@@ -132,7 +136,7 @@
         class="nav-btn glass"
         :whileTap="{ scale: 0.92 }"
         @click="proximaSemana"
-        :disabled="semanaAtual >= 38"
+        :disabled="semanaAtual >= maxSemana"
         aria-label="Próxima semana"
       >
         <span>Próxima</span>
@@ -148,7 +152,7 @@
 import { computed } from 'vue'
 import { motion } from 'motion-v'
 import { useGemelar } from '../composables/useGemelar.js'
-import { useSemanaData, getConquista } from '../composables/useSemanaData.js'
+import { useSemanaData, getConquista, useSemanaDataUnica, getConquistaUnica } from '../composables/useSemanaData.js'
 import BotaoOuvir from './BotaoOuvir.vue'
 
 const {
@@ -162,22 +166,30 @@ const semanaAtual = computed({
   set: (val) => { state.currentWeek = val },
 })
 
-const { dados } = useSemanaData(semanaAtual)
+// Usa o dataset correto conforme o tipo de gestação
+const isGemelar = computed(() => state.tipoGestacao !== 'unica')
+const { dados: dadosGemelar } = useSemanaData(semanaAtual)
+const { dados: dadosUnica } = useSemanaDataUnica(semanaAtual)
+const dados = computed(() => isGemelar.value ? dadosGemelar.value : dadosUnica.value)
 
-const conquista = computed(() => getConquista(semanaAtual.value))
+const conquista = computed(() => {
+  if (isGemelar.value) return getConquista(semanaAtual.value)
+  return getConquistaUnica(semanaAtual.value)
+})
 
 // Tamanho do círculo e emoji baseado na semana
+const maxSemana = computed(() => isGemelar.value ? 38 : 40)
 const circuloSize = computed(() => {
   const min = 100
   const max = 180
-  const progress = (semanaAtual.value - 4) / (38 - 4)
+  const progress = (semanaAtual.value - 4) / (maxSemana.value - 4)
   return Math.round(min + (max - min) * progress)
 })
 
 const emojiSize = computed(() => {
   const min = 2.2
   const max = 4.5
-  const progress = (semanaAtual.value - 4) / (38 - 4)
+  const progress = (semanaAtual.value - 4) / (maxSemana.value - 4)
   return (min + (max - min) * progress).toFixed(1) + 'rem'
 })
 
@@ -196,14 +208,14 @@ function semanaAnterior() {
 }
 
 function proximaSemana() {
-  if (semanaAtual.value < 38) semanaAtual.value++
+  if (semanaAtual.value < maxSemana.value) semanaAtual.value++
 }
 
 // Leitura
 const textoCompleto = computed(() => {
   const d = dados.value
   const nome = state.motherName ? `Olá, ${state.motherName}. ` : ''
-  return `${nome}${d.label}. ${d.frase} ${d.marco} ${d.carinho}`
+  return `${nome}${d.label || ''}. ${d.frase} ${d.marco} ${d.carinho}`
 })
 </script>
 
